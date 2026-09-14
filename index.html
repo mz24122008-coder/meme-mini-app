@@ -424,9 +424,8 @@
 const tg = window.Telegram?.WebApp;
 if (tg) { tg.ready(); tg.expand(); }
 
-/* ============ ШАБЛОНЫ — теперь с imgflip (без лимитов) ============ */
+/* ============ ШАБЛОНЫ (imgflip) ============ */
 const TEMPLATES = [
-  // Классика
   { id: 'drake',       name: 'Дрейк',         cat: 'classic',  url: 'https://i.imgflip.com/30b1gx.jpg' },
   { id: 'buttons',     name: 'Две кнопки',    cat: 'classic',  url: 'https://i.imgflip.com/1g8my4.jpg' },
   { id: 'change',      name: 'Change My Mind',cat: 'classic',  url: 'https://i.imgflip.com/24y43o.jpg' },
@@ -435,8 +434,6 @@ const TEMPLATES = [
   { id: 'onedoesnot',  name: 'Боромир',       cat: 'classic',  url: 'https://i.imgflip.com/1bij.jpg' },
   { id: 'philosoraptor', name: 'Философ',     cat: 'classic',  url: 'https://i.imgflip.com/1bip.jpg' },
   { id: 'yuno',        name: 'Y U NO',        cat: 'classic',  url: 'https://i.imgflip.com/1bh9.jpg' },
-
-  // Реакции
   { id: 'distracted',  name: 'Отвлёкся',      cat: 'react',    url: 'https://i.imgflip.com/1ur9b0.jpg' },
   { id: 'disaster',    name: 'Пожар',         cat: 'react',    url: 'https://i.imgflip.com/23ls.jpg' },
   { id: 'mocking',     name: 'Спанч',         cat: 'react',    url: 'https://i.imgflip.com/1otk96.jpg' },
@@ -445,23 +442,17 @@ const TEMPLATES = [
   { id: 'batman',      name: 'Бэтмен',        cat: 'react',    url: 'https://i.imgflip.com/9ehk.jpg' },
   { id: 'fry',         name: 'Фрай',          cat: 'react',    url: 'https://i.imgflip.com/1bgw.jpg' },
   { id: 'facepalm',    name: 'Фейспалм',      cat: 'react',    url: 'https://i.imgflip.com/1bg8.jpg' },
-
-  // Животные
   { id: 'doge',        name: 'Doge',          cat: 'animals',  url: 'https://i.imgflip.com/4t0m5.jpg' },
   { id: 'grumpy',      name: 'Грампи',        cat: 'animals',  url: 'https://i.imgflip.com/8p0a.jpg' },
   { id: 'success',     name: 'Успех',         cat: 'animals',  url: 'https://i.imgflip.com/1bhk.jpg' },
   { id: 'sadfrog',     name: 'Грусть',        cat: 'animals',  url: 'https://i.imgflip.com/5g9dqm.jpg' },
   { id: 'owl',         name: 'Сова',          cat: 'animals',  url: 'https://i.imgflip.com/2gnnjh.jpg' },
-
-  // Мульты
   { id: 'thisfine',    name: 'This is Fine',  cat: 'cartoon',  url: 'https://i.imgflip.com/wxica.jpg' },
   { id: 'oprah',       name: 'Опра',          cat: 'cartoon',  url: 'https://i.imgflip.com/1bh8.jpg' },
   { id: 'spongebob',   name: 'Спанч 2',       cat: 'cartoon',  url: 'https://i.imgflip.com/1otk96.jpg' },
   { id: 'squidward',   name: 'Сквид',         cat: 'cartoon',  url: 'https://i.imgflip.com/2v5wr6.jpg' },
   { id: 'yodawg',      name: 'Йода',          cat: 'cartoon',  url: 'https://i.imgflip.com/1b42wl.jpg' },
   { id: 'tenguy',      name: 'Джентльмен',    cat: 'cartoon',  url: 'https://i.imgflip.com/1bgs0z.jpg' },
-
-  // Реакции 2
   { id: 'firstworld',  name: 'First World',   cat: 'new',      url: 'https://i.imgflip.com/1bh1.jpg' },
   { id: 'forever',     name: 'Forever Alone', cat: 'new',      url: 'https://i.imgflip.com/9ehk.jpg' },
   { id: 'badluck',     name: 'Bad Luck',      cat: 'new',      url: 'https://i.imgflip.com/1bh4.jpg' },
@@ -518,9 +509,9 @@ function updateCounters() {
   document.getElementById('historyCount').textContent = store.history.length + ' мемов';
 }
 
-/* ============ ШАБЛОНЫ (с превью) ============ */
+/* ============ КАТЕГОРИИ / ШАБЛОНЫ ============ */
 function proxiedUrl(url, w = 300) {
-  // images.weserv.nl — бесплатный прокси, решает CORS и ресайз
+  // weserv — только для превью (мелких). Для генерации — через loadImageRobust
   return `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&w=${w}&output=jpg`;
 }
 
@@ -550,7 +541,7 @@ function renderTemplates() {
     btn.className = 'template-btn' + (t.id === selectedTemplate ? ' active' : '');
     btn.innerHTML = `
       <div class="template-thumb">
-        <img src="${proxiedUrl(t.url, 150)}" alt="" loading="lazy">
+        <img src="${proxiedUrl(t.url, 150)}" alt="" loading="lazy" onerror="this.style.opacity='0.2'">
       </div>
       <span class="template-name">${t.name}</span>
     `;
@@ -697,12 +688,14 @@ document.querySelectorAll('#sourceTabs .cat-btn').forEach(btn => {
 const generateBtn = document.getElementById('generateBtn');
 const memeContainer = document.getElementById('memeContainer');
 
-// Загрузка картинки с несколькими попытками
+// Каскад прокси: пробуем по очереди, пока один не сработает
 async function loadImageRobust(originalUrl) {
+  const stripped = originalUrl.replace(/^https?:\/\//, '');
   const attempts = [
-    proxiedUrl(originalUrl, 800),
-    proxiedUrl(originalUrl, 800) + '&il',
-    originalUrl
+    originalUrl,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(originalUrl)}`,
+    `https://corsproxy.io/?url=${encodeURIComponent(originalUrl)}`,
+    `https://images.weserv.nl/?url=${encodeURIComponent(stripped)}&w=800&output=jpg`
   ];
 
   for (const url of attempts) {
@@ -715,10 +708,8 @@ async function loadImageRobust(originalUrl) {
         img.onerror = () => { clearTimeout(t); rej(new Error('load fail')); };
         img.src = url;
       });
-      return img;
-    } catch (e) {
-      console.warn('Attempt failed:', url, e.message);
-    }
+      if (img.width > 0) return img;
+    } catch (e) { /* пробуем следующий */ }
   }
   throw new Error('Не удалось загрузить картинку');
 }
