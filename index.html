@@ -2,73 +2,185 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Мем-Генератор</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Мем-Студия</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root {
-    --bg: var(--tg-theme-bg-color, #17212b);
-    --secondary-bg: var(--tg-theme-secondary-bg-color, #232e3c);
-    --text: var(--tg-theme-text-color, #ffffff);
-    --hint: var(--tg-theme-hint-color, #708499);
-    --link: var(--tg-theme-link-color, #6ab3f3);
-    --button: var(--tg-theme-button-color, #5288c1);
-    --button-text: var(--tg-theme-button-text-color, #ffffff);
+    --bg: #0f1420;
+    --bg2: #17212b;
+    --card: rgba(35, 46, 60, 0.7);
+    --card-solid: #232e3c;
+    --border: rgba(255,255,255,0.08);
+    --text: #ffffff;
+    --hint: #708499;
+    --accent: #6ab3f3;
+    --accent2: #a06af3;
+    --button: linear-gradient(135deg, #5288c1, #6a5ac1);
+    --danger: #e85d5d;
+    --success: #4dc77d;
   }
+  body.light {
+    --bg: #f0f2f5;
+    --bg2: #ffffff;
+    --card: rgba(255,255,255,0.85);
+    --card-solid: #ffffff;
+    --border: rgba(0,0,0,0.08);
+    --text: #17212b;
+    --hint: #8a93a0;
+  }
+
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body {
+  html, body {
     margin: 0;
-    padding: 16px;
+    padding: 0;
+    min-height: 100vh;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--bg);
     color: var(--text);
-    min-height: 100vh;
     overflow-x: hidden;
+    transition: background 0.3s, color 0.3s;
   }
-  .header {
+
+  /* Анимированный фон */
+  .bg-blobs {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.35;
+    animation: float 20s infinite ease-in-out;
+  }
+  .blob.b1 { width: 260px; height: 260px; background: #5288c1; top: -80px; left: -80px; }
+  .blob.b2 { width: 300px; height: 300px; background: #a06af3; bottom: -100px; right: -100px; animation-delay: -7s; }
+  .blob.b3 { width: 220px; height: 220px; background: #22c55e; top: 40%; left: 60%; animation-delay: -14s; opacity: 0.2; }
+  @keyframes float {
+    0%,100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(40px,-30px) scale(1.1); }
+    66% { transform: translate(-30px,40px) scale(0.95); }
+  }
+  body.light .blob { opacity: 0.25; }
+
+  /* Шапка */
+  .app-header {
+    padding: calc(env(safe-area-inset-top, 0px) + 18px) 20px 12px;
     text-align: center;
-    margin-bottom: 20px;
   }
-  .header h1 {
-    font-size: 24px;
-    margin: 0 0 8px 0;
-    font-weight: 700;
-    background: linear-gradient(135deg, #6ab3f3, #a06af3);
+  .app-header h1 {
+    font-size: 26px;
+    margin: 0 0 6px 0;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    letter-spacing: -0.5px;
   }
-  .stats {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    font-size: 13px;
+  .app-header .sub {
+    font-size: 12px;
     color: var(--hint);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
   }
-  .stats b { color: var(--text); font-size: 15px; }
-  
+
+  /* Основной контейнер */
+  .main {
+    padding: 0 16px 100px;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .tab { display: none; animation: fadeIn 0.25s ease; }
+  .tab.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Карточки */
+  .card {
+    background: var(--card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
   .section-title {
-    font-size: 13px;
+    font-size: 12px;
     text-transform: uppercase;
     color: var(--hint);
-    margin: 16px 0 8px 0;
-    letter-spacing: 0.5px;
+    margin: 18px 4px 8px;
+    letter-spacing: 1px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .section-title .link {
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: none;
+    letter-spacing: 0;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    font-family: inherit;
     font-weight: 600;
   }
-  
+
+  /* Категории */
+  .categories {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 0 8px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .categories::-webkit-scrollbar { display: none; }
+  .cat-btn {
+    flex: 0 0 auto;
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .cat-btn.active {
+    background: var(--button);
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(82,136,193,0.35);
+  }
+  .cat-btn:active { transform: scale(0.95); }
+
+  /* Сетка шаблонов */
   .templates {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
     gap: 8px;
-    margin-bottom: 8px;
   }
   .template-btn {
-    background: var(--secondary-bg);
+    background: var(--card);
     border: 2px solid transparent;
-    border-radius: 10px;
-    padding: 8px 4px;
+    border-radius: 12px;
+    padding: 10px 4px 8px;
     color: var(--text);
-    font-size: 11px;
+    font-size: 10px;
     cursor: pointer;
     transition: all 0.15s;
     text-align: center;
@@ -77,55 +189,112 @@
     flex-direction: column;
     align-items: center;
     gap: 4px;
+    font-weight: 500;
   }
-  .template-btn:active { transform: scale(0.95); }
+  .template-btn:active { transform: scale(0.92); }
   .template-btn.active {
-    border-color: var(--button);
-    background: rgba(82, 136, 193, 0.2);
+    border-color: var(--accent);
+    background: rgba(106, 179, 243, 0.15);
+    box-shadow: 0 0 0 3px rgba(106, 179, 243, 0.1);
   }
-  .template-emoji { font-size: 22px; }
-  
-  .input-group {
-    margin-bottom: 10px;
-  }
+  .template-emoji { font-size: 24px; line-height: 1; }
+
+  /* Инпуты */
+  .input-group { margin-bottom: 10px; position: relative; }
   input[type="text"] {
     width: 100%;
-    padding: 12px 14px;
-    border-radius: 10px;
-    border: 1px solid var(--secondary-bg);
-    background: var(--secondary-bg);
+    padding: 13px 44px 13px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card-solid);
     color: var(--text);
     font-size: 15px;
     font-family: inherit;
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
   input[type="text"]:focus {
-    border-color: var(--button);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(106, 179, 243, 0.15);
   }
   input::placeholder { color: var(--hint); }
-  
+  .clear-input {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--hint);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Быстрые эмодзи */
+  .emoji-row {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 2px 0 4px;
+    margin-bottom: 10px;
+    scrollbar-width: none;
+  }
+  .emoji-row::-webkit-scrollbar { display: none; }
+  .emoji-btn {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--card-solid);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s;
+  }
+  .emoji-btn:active { transform: scale(0.85); }
+
+  /* Главная кнопка */
   .generate-btn {
     width: 100%;
     padding: 16px;
-    border-radius: 12px;
+    border-radius: 14px;
     border: none;
-    background: linear-gradient(135deg, #5288c1, #6a5ac1);
-    color: white;
+    background: var(--button);
+    color: #fff;
     font-size: 17px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     font-family: inherit;
-    margin-top: 8px;
-    transition: transform 0.1s, opacity 0.2s;
-    box-shadow: 0 4px 12px rgba(82, 136, 193, 0.3);
+    margin-top: 6px;
+    transition: transform 0.1s, box-shadow 0.2s;
+    box-shadow: 0 6px 18px rgba(82, 136, 193, 0.4);
+    position: relative;
+    overflow: hidden;
+  }
+  .generate-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
   }
   .generate-btn:active { transform: scale(0.97); }
-  .generate-btn:disabled { opacity: 0.6; cursor: wait; }
-  
+  .generate-btn:active::before { transform: translateX(100%); }
+  .generate-btn:disabled { opacity: 0.6; }
+
+  /* Результат */
   .meme-container {
-    margin-top: 20px;
-    min-height: 100px;
+    margin-top: 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -133,230 +302,928 @@
   }
   .meme-img {
     max-width: 100%;
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .meme-actions {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+  }
+  .action-btn {
+    flex: 1;
+    padding: 13px;
     border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    animation: fadeIn 0.4s ease;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .share-btn {
-    padding: 12px 24px;
-    border-radius: 10px;
-    border: none;
-    background: var(--button);
-    color: var(--button-text);
-    font-size: 15px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     font-family: inherit;
-    width: 100%;
-    max-width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: transform 0.1s;
   }
-  .share-btn:active { transform: scale(0.97); }
-  
+  .action-btn.primary {
+    background: var(--button);
+    border-color: transparent;
+    color: #fff;
+  }
+  .action-btn:active { transform: scale(0.95); }
+
+  /* Загрузчик */
+  .loader-wrap { padding: 40px 0; text-align: center; }
   .loader {
     display: inline-block;
-    width: 30px;
-    height: 30px;
-    border: 3px solid var(--secondary-bg);
-    border-top-color: var(--button);
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-  
+
   .empty {
     text-align: center;
     padding: 40px 20px;
     color: var(--hint);
     font-size: 14px;
   }
-  .empty-icon { font-size: 48px; display: block; margin-bottom: 12px; opacity: 0.5; }
-  
+  .empty-icon { font-size: 56px; display: block; margin-bottom: 14px; opacity: 0.5; }
+
+  /* История */
+  .history-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .history-item {
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--card);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    position: relative;
+    aspect-ratio: 1;
+    transition: transform 0.15s;
+  }
+  .history-item:active { transform: scale(0.96); }
+  .history-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Настройки */
+  .setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .setting-row:last-child { border-bottom: none; }
+  .setting-info { flex: 1; }
+  .setting-label {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .setting-desc {
+    font-size: 12px;
+    color: var(--hint);
+  }
+  .switch {
+    position: relative;
+    width: 48px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch-slider {
+    position: absolute;
+    inset: 0;
+    background: var(--card-solid);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    transition: 0.25s;
+    cursor: pointer;
+  }
+  .switch-slider::before {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    top: 2px;
+    left: 2px;
+    transition: 0.25s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  .switch input:checked + .switch-slider { background: var(--accent); border-color: transparent; }
+  .switch input:checked + .switch-slider::before { transform: translateX(20px); }
+
+  .segment {
+    display: flex;
+    background: var(--card-solid);
+    border-radius: 10px;
+    padding: 3px;
+    border: 1px solid var(--border);
+  }
+  .segment button {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .segment button.active {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .danger-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(232, 93, 93, 0.3);
+    background: rgba(232, 93, 93, 0.1);
+    color: var(--danger);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 8px;
+  }
+
+  /* Нижняя навигация */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 8px calc(env(safe-area-inset-bottom, 0px) + 8px);
+    z-index: 100;
+  }
+  .nav-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 8px 4px;
+    color: var(--hint);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    border-radius: 10px;
+    transition: all 0.2s;
+  }
+  .nav-btn .nav-icon { font-size: 20px; line-height: 1; transition: transform 0.2s; }
+  .nav-btn.active { color: var(--accent); }
+  .nav-btn.active .nav-icon { transform: scale(1.1); }
+
+  /* Тост */
   .toast {
     position: fixed;
-    bottom: 20px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 90px);
     left: 50%;
     transform: translateX(-50%) translateY(100px);
-    background: var(--secondary-bg);
+    background: var(--card-solid);
     color: var(--text);
     padding: 12px 20px;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 14px;
     transition: transform 0.3s;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
     z-index: 1000;
+    border: 1px solid var(--border);
+    max-width: 80vw;
+    text-align: center;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Конфетти */
+  .confetti {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    pointer-events: none;
+    z-index: 999;
+    animation: confetti-fall 1.2s linear forwards;
+  }
+  @keyframes confetti-fall {
+    to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Модалка просмотра истории */
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s;
+  }
+  .modal.show { display: flex; }
+  .modal-content {
+    max-width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+  .modal-content img {
+    max-width: 100%;
+    max-height: 70vh;
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  }
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    max-width: 400px;
+  }
+  .close-modal {
+    position: absolute;
+    top: calc(env(safe-area-inset-top, 0px) + 16px);
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+  }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <h1>😎 Мем-Генератор</h1>
-  <div class="stats">
-    <span>Создано мемов: <b id="counter">0</b></span>
-  </div>
+<div class="bg-blobs">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
 </div>
 
-<div class="section-title">Выбери шаблон</div>
-<div class="templates" id="templates"></div>
+<header class="app-header">
+  <h1>Мем-Студия</h1>
+  <div class="sub">Создано мемов: <b id="counter">0</b></div>
+</header>
 
-<div class="section-title">Текст мема</div>
-<div class="input-group">
-  <input type="text" id="topText" placeholder="Верхний текст..." maxlength="50">
-</div>
-<div class="input-group">
-  <input type="text" id="bottomText" placeholder="Нижний текст..." maxlength="50">
-</div>
+<main class="main">
 
-<button class="generate-btn" id="generateBtn">🎨 Сгенерировать мем</button>
+  <!-- =============== ГЕНЕРАТОР =============== -->
+  <section class="tab active" id="tab-generator">
+    <div class="section-title">
+      <span>Категории</span>
+      <button class="link" id="randomBtn">🎲 Случайный</button>
+    </div>
+    <div class="categories" id="categories"></div>
 
-<div class="meme-container" id="memeContainer">
-  <div class="empty">
-    <span class="empty-icon">🖼️</span>
-    Здесь появится твой мем
-  </div>
-</div>
+    <div class="section-title">Шаблон</div>
+    <div class="templates" id="templates"></div>
+
+    <div class="section-title">Текст мема</div>
+    <div class="card">
+      <div class="input-group">
+        <input type="text" id="topText" placeholder="Верхний текст..." maxlength="60">
+        <button class="clear-input" data-target="topText">✕</button>
+      </div>
+      <div class="emoji-row" id="emojiRowTop"></div>
+      <div class="input-group">
+        <input type="text" id="bottomText" placeholder="Нижний текст..." maxlength="60">
+        <button class="clear-input" data-target="bottomText">✕</button>
+      </div>
+      <div class="emoji-row" id="emojiRowBottom"></div>
+    </div>
+
+    <button class="generate-btn" id="generateBtn">🎨 Сгенерировать мем</button>
+
+    <div class="meme-container" id="memeContainer">
+      <div class="empty">
+        <span class="empty-icon">🖼️</span>
+        Здесь0 появится твой мем
+      </div>
+    </ мdiv>
+  </section>
+
+  <!-- =============== ИСТОРИЯ =============== -->
+  <section class="tab" id="tab-history">
+    <div class="section-title">
+      <span>Твои мемы</span>
+      <button class="link" id="clearHistoryBtn">Очистить</button>
+    </div>
+    <div id="historyContainer"></div>
+  </section>
+
+  <!-- =============== НАСТРОЙКИ =============== -->
+  <section class="tab" id="tab-settings">
+    <div class="section-title">Внешний вид</div>
+    <div class="card">
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">Тема</div>
+          <div class="setting-desc">Тёмная или светлая</div>
+        </div>
+        <div class="segment" id="themeSegment">
+          <button data-theme="auto">Авто</button>
+          <button data-theme="dark">Тёмная</button>
+          <button data-theme="light">Светлая</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Генерация</div>
+    <div class="card">
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">Водяной знак</div>
+          <div class="setting-desc">Логотип бота на картинке</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="watermarkToggle">
+          <span class="switch-slider"></span>
+        </label>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">Авто-сохранение</div>
+          <div class="setting-desc">Сохранять мемы в историю</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="autosaveToggle" checked>
+          <span class="switch-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="section-title">Данные</div>
+    <div class="card">
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">Всего сгенерировано</div>
+          <div class="setting-desc" id="totalCount">емов</div>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">В истории</div>
+          <div class="setting-desc" id="historyCount">0 мемов</div>
+        </div>
+      </div>
+      <button class="danger-btn" id="resetAllBtn">🗑 Сбросить всё</button>
+    </div>
+
+    <div class="section-title">О приложении</div>
+    <div class="card">
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">Версия</div>
+          <div class="setting-desc">1.0.0</div>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">Движок</div>
+          <div class="setting-desc">memegen.link API</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Нижняя навигация -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" data-tab="generator">
+    <span class="nav-icon">🎨</span>
+    <span>Генератор</span>
+  </button>
+  <button class="nav-btn" data-tab="history">
+    <span class="nav-icon">📚</span>
+    <span>История</span>
+  </button>
+  <button class="nav-btn" data-tab="settings">
+    <span class="nav-icon">⚙️</span>
+    <span>Настройки</span>
+  </button>
+</nav>
 
 <div class="toast" id="toast"></div>
 
-<script>
-const tg = window.Telegram?.WebApp;
-if (tg) { tg.ready(); tg.expand(); }
+<!-- Модалка для истории -->
+<div class="modal" id="modal">
+  <button class="close-modal" id="closeModal">✕</button>
+  <div class="modal-content">
+    <img id="modalImg" src="" alt="">
+    <div class="modal-actions">
+      <button class="action-btn primary" id="modalShare">📤 Поделиться</button>
+      <button class="action-btn" id="modalDownload">⬇️ Скачать</button>
+    </div>
+  </div>
+</div>
 
-const templates = [
-  { id: 'drake', name: 'Дрейк', emoji: '🤷‍♂️' },
-  { id: 'buzz', name: 'Базз', emoji: '🚀' },
-  { id: 'doge', name: 'Doge', emoji: '🐕' },
-  { id: 'success', name: 'Успех', emoji: '👶' },
-  { id: 'facepalm', name: 'Фейспалм', emoji: '🤦' },
-  { id: 'fry', name: 'Фрай', emoji: '🤔' },
-  { id: 'gru', name: 'Гру', emoji: '👨‍🦲' },
-  { id: 'panik', name: 'Паника', emoji: '😱' },
-  { id: 'philosoraptor', name: 'Философ', emoji: '🦖' },
-  { id: 'sadfrog', name: 'Грустно', emoji: '🐸' },
-  { id: 'spongebob', name: 'Спанч', emoji: '🧽' },
-  { id: 'squidward', name: 'Сквид', emoji: '🐙' },
-  { id: 'think', name: 'Думает', emoji: '🤨' },
-  { id: 'woman-cat', name: 'Кошка', emoji: '🐱' },
-  { id: 'yuno', name: 'Y U NO', emoji: '😤' },
-  { id: 'regret', name: 'Сожаление', emoji: '😬' },
-  { id: 'oprah', name: 'Опра', emoji: '🎁' },
-  { id: 'money', name: 'Деньги', emoji: '💰' },
-  { id: 'ancient', name: 'Древний', emoji: '👽' },
-  { id: 'disastergirl', name: 'Пожар', emoji: '🔥' },
-  { id: 'hide', name: 'Прячется', emoji: '🙈' },
-  { id: 'cryingfloor', name: 'Плачет', emoji: '😭' },
-  { id: 'distracted', name: 'Отвлёкся', emoji: '👀' },
-  { id: 'rollsafe', name: 'Smart', emoji: '🧠' }
+<script>
+/* ========================================================
+   ИНИЦИАЛИЗАЦИЯ TELEGRAM
+   ======================================================== */
+const tg = window.Telegram?.WebApp;
+if (tg) { tg.ready(); tg.expand(); if (tg.setHeaderColor) tg.setHeaderColor('#0f1420'); }
+
+/* ========================================================
+   ШАБЛОНЫ (разбитые по категориям)
+   ======================================================== */
+const TEMPLATES = [
+  // Классика
+  { id: 'drake', name: 'Дрейк', emoji: '🤷‍♂️', cat: 'classic' },
+  { id: 'buzz', name: 'Базз', emoji: '🚀', cat: 'classic' },
+  { id: 'fry', name: 'Фрай', emoji: '🤔', cat: 'classic' },
+  { id: 'gru', name: 'Гру', emoji: '👨‍🦲', cat: 'classic' },
+  { id: 'success', name: 'Успех', emoji: '👶', cat: 'classic' },
+  { id: 'facepalm', name: 'Фейспалм', emoji: '🤦', cat: 'classic' },
+  { id: 'yuno', name: 'Y U NO', emoji: '😤', cat: 'classic' },
+  { id: 'philosoraptor', name: 'Философ', emoji: '🦖', cat: 'classic' },
+
+  // Реакции
+  { id: 'panik', name: 'Паника', emoji: '😱', cat: 'react' },
+  { id: 'regret', name: 'Сожаление', emoji: '😬', cat: 'react' },
+  { id: 'hide', name: 'Прячется', emoji: '🙈', cat: 'react' },
+  { id: 'cryingfloor', name: 'Плачет', emoji: '😭', cat: 'react' },
+  { id: 'distracted', name: 'Отвлёкся', emoji: '👀', cat: 'react' },
+  { id: 'rollsafe', name: 'Smart', emoji: '🧠', cat: 'react' },
+  { id: 'think', name: 'Думает', emoji: '🤨', cat: 'react' },
+  { id: 'disastergirl', name: 'Пожар', emoji: '🔥', cat: 'react' },
+
+  // Животные
+  { id: 'doge', name: 'Doge', emoji: '🐕', cat: 'animals' },
+  { id: 'sadfrog', name: 'Грустно', emoji: '🐸', cat: 'animals' },
+  { id: 'woman-cat', name: 'Кошка', emoji: '🐱', cat: 'animals' },
+  { id: 'ancient', name: 'Древний', emoji: '👽', cat: 'animals' },
+
+  // Мульты
+  { id: 'spongebob', name: 'Спанч', emoji: '🧽', cat: 'cartoon' },
+  { id: 'squidward', name: 'Сквид', emoji: '🐙', cat: 'cartoon' },
+  { id: 'oprah', name: 'Опра', emoji: '🎁', cat: 'cartoon' },
+  { id: 'money', name: 'Деньги', emoji: '💰', cat: 'cartoon' }
 ];
 
-let selectedTemplate = 'drake';
+const CATEGORIES = [
+  { id: 'all', name: 'Все', emoji: '✨' },
+  { id: 'classic', name: 'Классика', emoji: '🎬' },
+  { id: 'react', name: 'Реакции', emoji: '😱' },
+  { id: 'animals', name: 'Животные', emoji: '🐾' },
+  { id: 'cartoon', name: 'Мульты', emoji: '🎭' }
+];
+
+const QUICK_EMOJI = ['😂', '🔥', '💀', '😎', '🤡', '👀', '💯', '🚀', '😭', '🤔', '❤️', '✨', '👑', '💪', '🧠', '🤯'];
+
+/* ========================================================
+   СОСТОЯНИЕ И ХРАНИЛИЩЕ
+   ======================================================== */
+const store = {
+  get settings() {
+    try { return JSON.parse(localStorage.getItem('memeSettings') || '{}'); }
+    catch { return {}; }
+  },
+  set settings(v) { localStorage.setItem('memeSettings', JSON.stringify(v)); },
+  get history() {
+    try { return JSON.parse(localStorage.getItem('memeHistory') || '[]'); }
+    catch { return []; }
+  },
+  set history(v) { localStorage.setItem('memeHistory', JSON.stringify(v.slice(0, 40))); },
+  get count() { return parseInt(localStorage.getItem('memeCount') || '0', 10); },
+  set count(v) { localStorage.setItem('memeCount', v); }
+};
+
+const settings = Object.assign({
+  theme: 'auto',
+  watermark: false,
+  autosave: true,
+  defaultTemplate: 'drake'
+}, store.settings);
+
+let selectedTemplate = settings.defaultTemplate;
+let selectedCategory = 'all';
 let currentMemeUrl = '';
+let currentMemeData = null;
 
-// --- Счётчик ---
-function getCount() {
-  return parseInt(localStorage.getItem('memeCount') || '0', 10);
+/* ========================================================
+   ТЕМА
+   ======================================================== */
+function applyTheme() {
+  let t = settings.theme;
+  if (t === 'auto') {
+    const tgTheme = tg?.colorScheme;
+    t = tgTheme === 'light' ? 'light' : 'dark';
+  }
+  document.body.classList.toggle('light', t === 'light');
+  if (tg?.setHeaderColor) {
+    tg.setHeaderColor(t === 'light' ? '#f0f2f5' : '#0f1420');
+  }
+  document.querySelectorAll('#themeSegment button').forEach(b => {
+    b.classList.toggle('active', b.dataset.theme === settings.theme);
+  });
 }
-function setCount(n) {
-  localStorage.setItem('memeCount', n);
-  document.getElementById('counter').textContent = n.toLocaleString('ru-RU');
+
+/* ========================================================
+   СЧЁТЧИКИ
+   ======================================================== */
+function updateCounters() {
+  document.getElementById('counter').textContent = store.count.toLocaleString('ru-RU');
+  document.getElementById('totalCount').textContent = store.count.toLocaleString('ru-RU') + ' мемов';
+  document.getElementById('historyCount').textContent = store.history.length + ' мемов';
 }
-setCount(getCount());
 
-// --- Рендер шаблонов ---
-const templatesEl = document.getElementById('templates');
-templates.forEach(t => {
-  const btn = document.createElement('button');
-  btn.className = 'template-btn' + (t.id === selectedTemplate ? ' active' : '');
-  btn.dataset.id = t.id;
-  btn.innerHTML = `<span class="template-emoji">${t.emoji}</span><span>${t.name}</span>`;
-  btn.onclick = () => {
-    selectedTemplate = t.id;
-    document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    if (tg) tg.HapticFeedback?.selectionChanged();
-  };
-  templatesEl.appendChild(btn);
-});
+/* ========================================================
+   КАТЕГОРИИ И ШАБЛОНЫ
+   ======================================================== */
+function renderCategories() {
+  const el = document.getElementById('categories');
+  el.innerHTML = '';
+  CATEGORIES.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn' + (c.id === selectedCategory ? ' active' : '');
+    btn.textContent = `${c.emoji} ${c.name}`;
+    btn.onclick = () => {
+      selectedCategory = c.id;
+      renderCategories();
+      renderTemplates();
+      if (tg) tg.HapticFeedback?.selectionChanged();
+    };
+    el.appendChild(btn);
+  });
+}
 
-// --- Утилиты ---
+function renderTemplates() {
+  const el = document.getElementById('templates');
+  el.innerHTML = '';
+  const list = selectedCategory === 'all'
+    ? TEMPLATES
+    : TEMPLATES.filter(t => t.cat === selectedCategory);
+
+  list.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'template-btn' + (t.id === selectedTemplate ? ' active' : '');
+    btn.innerHTML = `<span class="template-emoji">${t.emoji}</span><span>${t.name}</span>`;
+    btn.onclick = () => {
+      selectedTemplate = t.id;
+      settings.defaultTemplate = t.id;
+      saveSettings();
+      renderTemplates();
+      if (tg) tg.HapticFeedback?.selectionChanged();
+    };
+    el.appendChild(btn);
+  });
+}
+
+/* ========================================================
+   БЫСТРЫЕ ЭМОДЗИ
+   ======================================================== */
+function renderEmojiRows() {
+  ['emojiRowTop', 'emojiRowBottom'].forEach((id, idx) => {
+    const el = document.getElementById(id);
+    el.innerHTML = '';
+    QUICK_EMOJI.forEach(e => {
+      const b = document.createElement('button');
+      b.className = 'emoji-btn';
+      b.textContent = e;
+      b.onclick = () => {
+        const input = document.getElementById(idx === 0 ? 'topText' : 'bottomText');
+        input.value += e;
+        input.focus();
+        if (tg) tg.HapticFeedback?.impactOccurred('light');
+      };
+      el.appendChild(b);
+    });
+  });
+}
+
+/* ========================================================
+   УТИЛИТЫ
+   ======================================================== */
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
 function encodeText(text) {
   if (!text || !text.trim()) return '_';
-  return encodeURIComponent(text.trim()).replace(/-/g, '--').replace(/_/g, '__').replace(/%20/g, '_');
+  return encodeURIComponent(text.trim())
+    .replace(/-/g, '--')
+    .replace(/_/g, '__')
+    .replace(/%20/g, '_');
 }
 
-// --- Генерация ---
+function saveSettings() { store.settings = settings; }
+
+function confettiBurst() {
+  const colors = ['#5288c1', '#6ab3f3', '#a06af3', '#4dc77d', '#ffd93d'];
+  for (let i = 0; i < 24; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.background = colors[i % colors.length];
+    c.style.left = (50 + (Math.random() - 0.5) * 40) + '%';
+    c.style.top = '40%';
+    c.style.transform = `translateX(${(Math.random() - 0.5) * 100}px)`;
+    c.style.animationDelay = (Math.random() * 0.2) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 1500);
+  }
+}
+
+/* ========================================================
+   ГЕНЕРАЦИЯ МЕМА
+   ======================================================== */
 const generateBtn = document.getElementById('generateBtn');
 const memeContainer = document.getElementById('memeContainer');
 
-generateBtn.onclick = () => {
-  if (tg) tg.HapticFeedback?.impactOccurred('medium');
-  
+function buildMemeUrl() {
   const top = document.getElementById('topText').value;
   const bottom = document.getElementById('bottomText').value;
-  
+  const topEnc = encodeText(top);
+  const bottomEnc = encodeText(bottom);
+  return `https://api.memegen.link/images/${selectedTemplate}/${topEnc}/${bottomEnc}.png?width=800`;
+}
+
+generateBtn.onclick = () => {
+  if (tg) tg.HapticFeedback?.impactOccurred('medium');
+
+  const url = buildMemeUrl();
   generateBtn.disabled = true;
-  memeContainer.innerHTML = '<div class="loader"></div>';
-  
-  const topEncoded = encodeText(top);
-  const bottomEncoded = encodeText(bottom);
-  const url = `https://api.memegen.link/images/${selectedTemplate}/${topEncoded}/${bottomEncoded}.png?width=800`;
-  
+  memeContainer.innerHTML = '<div class="loader-wrap"><div class="loader"></div></div>';
+
   const img = new Image();
   img.crossOrigin = 'anonymous';
+
   img.onload = () => {
     currentMemeUrl = url;
+    currentMemeData = {
+      url,
+      template: selectedTemplate,
+      top: document.getElementById('topText').value,
+      bottom: document.getElementById('bottomText').value,
+      time: Date.now()
+    };
+
     memeContainer.innerHTML = '';
-    
+
     const imgEl = document.createElement('img');
     imgEl.src = url;
     imgEl.className = 'meme-img';
+    imgEl.crossOrigin = 'anonymous';
     memeContainer.appendChild(imgEl);
-    
-    const shareBtn = document.createElement('button');
-    shareBtn.className = 'share-btn';
-    shareBtn.textContent = '📤 Поделиться мемом';
-    shareBtn.onclick = shareMeme;
-    memeContainer.appendChild(shareBtn);
-    
-    // Увеличиваем счётчик
-    setCount(getCount() + 1);
-    
+
+    const actions = document.createElement('div');
+    actions.className = 'meme-actions';
+    actions.innerHTML = `
+      <button class="action-btn primary" id="shareBtn">📤 Поделиться</button>
+      <button class="action-btn" id="downloadBtn">⬇️ Скачать</button>
+    `;
+    memeContainer.appendChild(actions);
+
+    document.getElementById('shareBtn').onclick = () => shareMeme(url);
+    document.getElementById('downloadBtn').onclick = () => downloadMeme(url);
+
+    // Счётчик
+    store.count = store.count + 1;
+    updateCounters();
+
+    // История
+    if (settings.autosave) {
+      const h = store.history;
+      h.unshift(currentMemeData);
+      store.history = h;
+      updateCounters();
+    }
+
     generateBtn.disabled = false;
     if (tg) tg.HapticFeedback?.notificationOccurred('success');
+    confettiBurst();
   };
+
   img.onerror = () => {
-    memeContainer.innerHTML = '<div class="empty"><span class="empty-icon">😢</span>Не удалось сгенерировать. Попробуй другой текст.</div>';
+    memeContainer.innerHTML = '<div class="empty"><span class="empty-icon">😢</span>Не удалось сгенерировать. Попробуй другой текст или шаблон.</div>';
     generateBtn.disabled = false;
     showToast('Ошибка генерации');
   };
+
   img.src = url;
 };
 
-// --- Поделиться ---
-function shareMeme() {
-  if (!currentMemeUrl) return;
+/* ========================================================
+   ПОДЕЛИТЬСЯ / СКАЧАТЬ
+   ======================================================== */
+function shareMeme(url) {
   if (tg) tg.HapticFeedback?.impactOccurred('light');
-  
-  const shareText = 'Смотри, какой мем я сделал! 😂';
-  const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(currentMemeUrl)}&text=${encodeURIComponent(shareText)}`;
-  
-  if (tg) {
-    tg.openTelegramLink(shareUrl);
-  } else {
-    window.open(shareUrl, '_blank');
+  const text = 'Смотри, какой мем я сделал! 😂';
+  const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+  if (tg) tg.openTelegramLink(shareUrl);
+  else window.open(shareUrl, '_blank');
+}
+
+async function downloadMeme(url) {
+  if (tg) tg.HapticFeedback?.impactOccurred('light');
+  showToast('Скачиваю...');
+  try {
+    const resp = await fetch(url);
+    const blob = await resp.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = `meme_${Date.now()}.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
+    showToast('Сохранено!');
+  } catch (e) {
+    // Fallback: открыть в новой вкладке
+    window.open(url, '_blank');
+    showToast('Открой картинку и сохрани вручную');
   }
+}
+
+/* ========================================================
+   НАВИГАЦИЯ ПО ТАБАМ
+   ======================================================== */
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.onclick = () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b === btn));
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.id === 'tab-' + tab));
+    if (tg) tg.HapticFeedback?.selectionChanged();
+    if (tab === 'history') renderHistory();
+    if (tab === 'settings') updateCounters();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+});
+
+/* ========================================================
+   ИСТОРИЯ
+   ======================================================== */
+function renderHistory() {
+  const el = document.getElementById('historyContainer');
+  const h = store.history;
+  if (!h.length) {
+    el.innerHTML = '<div class="empty"><span class="empty-icon">📭</span>Пока пусто. Сгенерируй первый мем!</div>';
+    return;
+  }
+  el.innerHTML = '';
+  const grid = document.createElement('div');
+  grid.className = 'history-grid';
+  h.forEach((item, i) => {
+    const d = document.createElement('div');
+    d.className = 'history-item';
+    d.innerHTML = `<img src="${item.url}" alt="" loading="lazy">`;
+    d.onclick = () => openModal(item.url);
+    grid.appendChild(d);
+  });
+  el.appendChild(grid);
+}
+
+document.getElementById('clearHistoryBtn').onclick = () => {
+  if (!store.history.length) return showToast('История пуста');
+  if (confirm('Удалить всю историю?')) {
+    store.history = [];
+    renderHistory();
+    updateCounters();
+    showToast('История очищена');
+  }
+};
+
+/* ========================================================
+   МОДАЛКА
+   ======================================================== */
+const modal = document.getElementById('modal');
+const modalImg = document.getElementById('modalImg');
+
+function openModal(url) {
+  modalImg.src = url;
+  modal.classList.add('show');
+}
+document.getElementById('closeModal').onclick = () => modal.classList.remove('show');
+modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('show'); };
+document.getElementById('modalShare').onclick = () => shareMeme(modalImg.src);
+document.getElementById('modalDownload').onclick = () => downloadMeme(modalImg.src);
+
+/* ========================================================
+   НАСТРОЙКИ — ОБРАБОТЧИКИ
+   ======================================================== */
+document.querySelectorAll('#themeSegment button').forEach(b => {
+  b.onclick = () => {
+    settings.theme = b.dataset.theme;
+    saveSettings();
+    applyTheme();
+    if (tg) tg.HapticFeedback?.selectionChanged();
+  };
+});
+
+document.getElementById('watermarkToggle').checked = settings.watermark;
+document.getElementById('watermarkToggle').onchange = (e) => {
+  settings.watermark = e.target.checked;
+  saveSettings();
+  showToast(e.target.checked ? 'Водяной знак включён' : 'Водяной знак выключен');
+};
+
+document.getElementById('autosaveToggle').checked = settings.autosave;
+document.getElementById('autosaveToggle').onchange = (e) => {
+  settings.autosave = e.target.checked;
+  saveSettings();
+  showToast(e.target.checked ? 'Автосохранение включено' : 'Автосохранение выключено');
+};
+
+document.getElementById('resetAllBtn').onclick = () => {
+  if (confirm('Точно сбросить всё? История, счётчик и настройки будут удалены.')) {
+    localStorage.removeItem('memeCount');
+    localStorage.removeItem('memeHistory');
+    localStorage.removeItem('memeSettings');
+    location.reload();
+  }
+};
+
+/* ========================================================
+   РАНДОМ
+   ======================================================== */
+document.getElementById('randomBtn').onclick = () => {
+  const t = TEMPLATES[Math.floor(Math.random() * TEMPLATES.length)];
+  selectedTemplate = t.id;
+  settings.defaultTemplate = t.id;
+  saveSettings();
+  renderTemplates();
+  if (tg) tg.HapticFeedback?.impactOccurred('medium');
+  showToast(`Шаблон: ${t.name}`);
+};
+
+/* ========================================================
+   ОЧИСТКА ИНПУТОВ
+   ======================================================== */
+document.querySelectorAll('.clear-input').forEach(b => {
+  b.onclick = () => {
+    document.getElementById(b.dataset.target).value = '';
+    b.style.display = 'none';
+  };
+});
+
+['topText', 'bottomText'].forEach(id => {
+  const input = document.getElementById(id);
+  const clearBtn = input.parentElement.querySelector('.clear-input');
+  input.addEventListener('input', () => {
+    clearBtn.style.display = input.value ? 'flex' : 'none';
+  });
+  clearBtn.style.display = 'none';
+});
+
+/* ========================================================
+   СТАРТ
+   ======================================================== */
+applyTheme();
+renderCategories();
+renderTemplates();
+renderEmojiRows();
+updateCounters();
+renderHistory();
+
+// Реакция на смену темы Telegram
+if (tg) {
+  tg.onEvent?.('themeChanged', () => {
+    if (settings.theme === 'auto') applyTheme();
+  });
 }
 </script>
 </body>
