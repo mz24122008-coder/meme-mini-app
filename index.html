@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -8,449 +7,643 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root {
-    --bg: #0a0e18;
-    --card: rgba(30, 41, 59, 0.6);
-    --card-solid: #1e293b;
+    --bg: #0a0e1a;
+    --bg2: #0f1525;
+    --surface: rgba(255,255,255,0.04);
+    --surface2: rgba(255,255,255,0.07);
     --border: rgba(255,255,255,0.08);
-    --text: #f1f5f9;
+    --border-hi: rgba(255,255,255,0.15);
+    --text: #f8fafc;
+    --text2: #cbd5e1;
     --hint: #64748b;
-    --accent: #60a5fa;
-    --accent2: #a78bfa;
-    --button: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    --accent: #6366f1;
+    --accent2: #8b5cf6;
+    --accent3: #ec4899;
+    --primary: linear-gradient(135deg, #6366f1, #8b5cf6);
     --success: #10b981;
     --danger: #ef4444;
+    --radius: 16px;
+    --radius-lg: 22px;
   }
   body.light {
     --bg: #f8fafc;
-    --card: rgba(255,255,255,0.85);
-    --card-solid: #ffffff;
-    --border: rgba(0,0,0,0.07);
+    --bg2: #ffffff;
+    --surface: rgba(0,0,0,0.03);
+    --surface2: rgba(0,0,0,0.05);
+    --border: rgba(0,0,0,0.06);
+    --border-hi: rgba(0,0,0,0.1);
     --text: #0f172a;
+    --text2: #334155;
     --hint: #94a3b8;
   }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
   html, body {
-    margin: 0; padding: 0; min-height: 100vh;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg); color: var(--text); overflow-x: hidden;
-    transition: background 0.3s, color 0.3s;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg); color: var(--text);
+    overflow-x: hidden; -webkit-font-smoothing: antialiased;
+    transition: background .3s, color .3s;
   }
-  .bg-blobs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-  .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; animation: float 22s infinite ease-in-out; }
-  .blob.b1 { width: 300px; height: 300px; background: #3b82f6; top: -100px; left: -100px; }
-  .blob.b2 { width: 340px; height: 340px; background: #8b5cf6; bottom: -120px; right: -120px; animation-delay: -8s; }
-  .blob.b3 { width: 240px; height: 240px; background: #06b6d4; top: 45%; left: 55%; animation-delay: -15s; opacity: 0.25; }
-  @keyframes float {
+  /* Background */
+  .bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .bg::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(99,102,241,0.15), transparent),
+                radial-gradient(ellipse 60% 50% at 100% 100%, rgba(139,92,246,0.12), transparent);
+  }
+  body.light .bg::before { opacity: 0.5; }
+  .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.35; animation: drift 25s ease-in-out infinite; }
+  .orb.o1 { width: 320px; height: 320px; background: #6366f1; top: -120px; left: -120px; }
+  .orb.o2 { width: 360px; height: 360px; background: #8b5cf6; bottom: -140px; right: -140px; animation-delay: -8s; }
+  .orb.o3 { width: 260px; height: 260px; background: #ec4899; top: 40%; left: 60%; animation-delay: -16s; opacity: 0.2; }
+  @keyframes drift {
     0%,100% { transform: translate(0,0) scale(1); }
-    50% { transform: translate(30px,-25px) scale(1.08); }
+    50% { transform: translate(40px,-30px) scale(1.15); }
   }
-  .app-header { padding: calc(env(safe-area-inset-top, 0px) + 20px) 20px 14px; text-align: center; }
-  .app-header h1 {
-    font-size: 27px; margin: 0 0 6px 0; font-weight: 800; letter-spacing: -0.5px;
-    background: linear-gradient(135deg, #60a5fa, #a78bfa, #22d3ee);
+
+  /* Header */
+  .header {
+    padding: calc(env(safe-area-inset-top, 0px) + 22px) 20px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 560px; margin: 0 auto;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .logo {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 20px rgba(99,102,241,0.4);
+  }
+  .logo svg { width: 22px; height: 22px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .brand-text h1 {
+    font-size: 17px; font-weight: 800; letter-spacing: -0.4px;
+    background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
-  .app-header .sub { font-size: 11px; color: var(--hint); letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
-  .main { padding: 0 16px 110px; max-width: 560px; margin: 0 auto; }
-  .tab { display: none; animation: fadeIn 0.25s ease; }
+  .brand-text .sub { font-size: 10px; color: var(--hint); font-weight: 600; letter-spacing: 0.5px; margin-top: 1px; }
+  .stat-badge {
+    display: flex; align-items: center; gap: 5px;
+    padding: 7px 12px; border-radius: 12px;
+    background: var(--surface2); border: 1px solid var(--border);
+    font-size: 12px; font-weight: 700; color: var(--text2);
+    backdrop-filter: blur(10px);
+  }
+  .stat-badge svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+
+  .main { padding: 0 16px 120px; max-width: 560px; margin: 0 auto; }
+  .tab { display: none; animation: slideIn .3s ease; }
   .tab.active { display: block; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Section */
+  .sec-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin: 22px 4px 10px;
+  }
+  .sec-title {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px;
+    font-weight: 800; color: var(--hint);
+  }
+  .sec-action {
+    font-size: 12px; font-weight: 700; color: #818cf8;
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    padding: 4px 8px; border-radius: 8px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .sec-action:active { background: var(--surface2); }
+  .sec-action svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+
+  /* Cards */
   .card {
-    background: var(--card); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-    border: 1px solid var(--border); border-radius: 18px; padding: 14px; margin-bottom: 12px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 16px;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    margin-bottom: 12px;
   }
-  .section-title {
-    font-size: 11px; text-transform: uppercase; color: var(--hint);
-    margin: 20px 4px 8px; letter-spacing: 1.2px; font-weight: 700;
-    display: flex; justify-content: space-between; align-items: center;
+
+  /* Chips */
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex: 0 0 auto; padding: 9px 16px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text2); font-size: 13px; font-weight: 600;
+    font-family: inherit; cursor: pointer; white-space: nowrap;
+    transition: all .2s; backdrop-filter: blur(10px);
+    display: flex; align-items: center; gap: 6px;
   }
-  .section-title .link {
-    font-size: 11px; color: var(--accent); text-transform: none; letter-spacing: 0;
-    cursor: pointer; background: none; border: none; padding: 4px 8px; font-family: inherit; font-weight: 700;
+  .chip svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+  .chip.active {
+    background: var(--primary); border-color: transparent; color: #fff;
+    box-shadow: 0 6px 16px rgba(99,102,241,0.4);
   }
-  .categories { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 8px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-  .categories::-webkit-scrollbar { display: none; }
-  .cat-btn {
-    flex: 0 0 auto; padding: 9px 15px; border-radius: 22px; border: 1px solid var(--border);
-    background: var(--card); color: var(--text); font-size: 13px; font-family: inherit;
-    font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;
-    backdrop-filter: blur(10px);
+  .chip:active { transform: scale(0.95); }
+
+  /* Upload */
+  .upload {
+    border: 2px dashed var(--border-hi); border-radius: var(--radius-lg);
+    padding: 36px 20px; text-align: center; cursor: pointer;
+    transition: all .2s; background: var(--surface);
   }
-  .cat-btn.active { background: var(--button); border-color: transparent; color: #fff; box-shadow: 0 6px 16px rgba(99,102,241,0.35); }
-  .cat-btn:active { transform: scale(0.95); }
-  .upload-zone {
-    border: 2px dashed var(--border); border-radius: 18px; padding: 32px 20px; text-align: center;
-    cursor: pointer; transition: all 0.2s; background: var(--card);
+  .upload:active { transform: scale(0.98); border-color: var(--accent); background: rgba(99,102,241,0.05); }
+  .upload-icon {
+    width: 64px; height: 64px; margin: 0 auto 14px;
+    border-radius: 20px; background: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 30px rgba(99,102,241,0.4);
   }
-  .upload-zone:active { transform: scale(0.98); border-color: var(--accent); }
-  .upload-zone .icon { font-size: 52px; display: block; margin-bottom: 10px; }
-  .upload-zone .title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-  .upload-zone .desc { font-size: 13px; color: var(--hint); }
-  .photo-preview { position: relative; border-radius: 14px; overflow: hidden; margin-bottom: 10px; border: 1px solid var(--border); }
-  .photo-preview img { width: 100%; display: block; max-height: 260px; object-fit: contain; background: #000; }
-  .remove-photo {
-    position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%;
-    background: rgba(0,0,0,0.65); border: none; color: #fff; font-size: 16px; cursor: pointer;
-    backdrop-filter: blur(10px);
-  }
-  .templates { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; }
-  .template-btn {
-    background: var(--card); border: 2px solid transparent; border-radius: 12px;
-    padding: 4px; color: var(--text); font-size: 10px; cursor: pointer;
-    transition: all 0.15s; text-align: center; font-family: inherit;
-    display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 600;
-    overflow: hidden;
-  }
-  .template-btn:active { transform: scale(0.92); }
-  .template-btn.active { border-color: var(--accent); background: rgba(96, 165, 250, 0.15); }
-  .template-thumb {
-    width: 100%; aspect-ratio: 1; border-radius: 8px; overflow: hidden;
-    background: var(--card-solid); display: flex; align-items: center; justify-content: center;
-    color: var(--hint); font-size: 24px;
-  }
-  .template-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .template-name { font-size: 9px; line-height: 1.1; }
-  .input-group { margin-bottom: 10px; position: relative; }
-  input[type="text"] {
-    width: 100%; padding: 13px 44px 13px 14px; border-radius: 13px;
-    border: 1px solid var(--border); background: var(--card-solid); color: var(--text);
-    font-size: 15px; font-family: inherit; outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.18); }
-  input::placeholder { color: var(--hint); }
-  .clear-input {
-    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-    width: 28px; height: 28px; border-radius: 50%; border: none; background: transparent;
-    color: var(--hint); cursor: pointer; font-size: 16px;
+  .upload-icon svg { width: 30px; height: 30px; stroke: #fff; fill: none; stroke-width: 2; }
+  .upload-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .upload-desc { font-size: 13px; color: var(--hint); }
+  .photo-wrap { position: relative; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); }
+  .photo-wrap img { width: 100%; display: block; max-height: 280px; object-fit: contain; background: #000; }
+  .photo-x {
+    position: absolute; top: 10px; right: 10px;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(0,0,0,0.7); border: none; color: #fff;
+    cursor: pointer; backdrop-filter: blur(10px);
     display: flex; align-items: center; justify-content: center;
   }
-  .emoji-row { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 4px; margin-bottom: 10px; scrollbar-width: none; }
-  .emoji-row::-webkit-scrollbar { display: none; }
+  .photo-x svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+
+  /* Templates */
+  .templates { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+  .tpl {
+    background: var(--surface); border: 2px solid transparent; border-radius: 14px;
+    padding: 5px; cursor: pointer; font-family: inherit; color: var(--text);
+    transition: all .15s; display: flex; flex-direction: column; gap: 5px;
+  }
+  .tpl:active { transform: scale(0.93); }
+  .tpl.active { border-color: var(--accent); background: rgba(99,102,241,0.12); }
+  .tpl-thumb {
+    width: 100%; aspect-ratio: 1; border-radius: 10px; overflow: hidden;
+    background: var(--surface2); position: relative;
+  }
+  .tpl-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity .3s; }
+  .tpl-thumb img.loaded { opacity: 1; }
+  .tpl-thumb::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, var(--surface2) 0%, var(--surface) 50%, var(--surface2) 100%);
+    background-size: 200% 100%; animation: shimmer 1.5s infinite;
+  }
+  .tpl-thumb img.loaded + * , .tpl-thumb:has(img.loaded)::before { display: none; }
+  .tpl-name { font-size: 9px; font-weight: 700; text-align: center; color: var(--text2); line-height: 1.2; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  /* Inputs */
+  .in-group { margin-bottom: 10px; position: relative; }
+  .input {
+    width: 100%; padding: 15px 46px 15px 16px; border-radius: 14px;
+    border: 1.5px solid var(--border); background: var(--surface2);
+    color: var(--text); font-size: 15px; font-family: inherit;
+    outline: none; transition: all .2s;
+  }
+  .input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(99,102,241,0.15); background: var(--surface); }
+  .input::placeholder { color: var(--hint); }
+  .in-x {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    width: 30px; height: 30px; border-radius: 50%;
+    border: none; background: var(--surface); color: var(--hint);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .in-x svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+
+  .emoji-line { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 4px; margin-bottom: 10px; scrollbar-width: none; }
+  .emoji-line::-webkit-scrollbar { display: none; }
   .emoji-btn {
-    flex: 0 0 auto; width: 38px; height: 38px; border-radius: 11px;
-    border: 1px solid var(--border); background: var(--card-solid);
-    font-size: 19px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: transform 0.1s;
+    flex: 0 0 auto; width: 40px; height: 40px; border-radius: 12px;
+    border: 1px solid var(--border); background: var(--surface2);
+    font-size: 20px; cursor: pointer; transition: transform .1s;
+    display: flex; align-items: center; justify-content: center;
   }
-  .emoji-btn:active { transform: scale(0.85); }
-  .phrase-btn {
-    display: block; width: 100%; text-align: left; padding: 11px 14px; margin-bottom: 6px;
-    border-radius: 11px; border: 1px solid var(--border); background: var(--card-solid);
-    color: var(--text); font-size: 13px; font-family: inherit; cursor: pointer;
-    transition: all 0.15s;
+  .emoji-btn:active { transform: scale(0.85); background: rgba(99,102,241,0.15); }
+
+  /* Phrase */
+  .phrase {
+    display: block; width: 100%; text-align: left; padding: 13px 15px;
+    margin-bottom: 7px; border-radius: 13px;
+    border: 1px solid var(--border); background: var(--surface2);
+    color: var(--text); font-size: 13px; font-weight: 500;
+    font-family: inherit; cursor: pointer; transition: all .15s;
+    line-height: 1.4;
   }
-  .phrase-btn:active { transform: scale(0.98); background: rgba(96, 165, 250, 0.15); }
-  .color-row { display: flex; gap: 8px; padding: 4px 0; }
-  .color-dot {
-    width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
-    border: 3px solid transparent; transition: all 0.15s;
-  }
-  .color-dot.active { border-color: var(--accent); transform: scale(1.1); }
-  .color-dot:active { transform: scale(0.9); }
-  .generate-btn {
-    width: 100%; padding: 17px; border-radius: 16px; border: none;
-    background: var(--button); color: #fff; font-size: 17px; font-weight: 700;
-    cursor: pointer; font-family: inherit; margin-top: 6px;
-    transition: transform 0.1s, box-shadow 0.2s;
-    box-shadow: 0 8px 22px rgba(99, 102, 241, 0.45);
-    letter-spacing: 0.3px;
-  }
-  .generate-btn:active { transform: scale(0.97); }
-  .generate-btn:disabled { opacity: 0.6; }
-  .meme-container { margin-top: 16px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-  .meme-img {
-    max-width: 100%; border-radius: 16px; box-shadow: 0 16px 40px rgba(0,0,0,0.45);
-    animation: popIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-  .meme-actions { display: flex; gap: 8px; width: 100%; }
-  .action-btn {
-    flex: 1; padding: 14px; border-radius: 13px; border: 1px solid var(--border);
-    background: var(--card); color: var(--text); font-size: 14px; font-weight: 600;
-    cursor: pointer; font-family: inherit; display: flex; align-items: center;
-    justify-content: center; gap: 6px; transition: transform 0.1s;
-  }
-  .action-btn.primary { background: var(--button); border-color: transparent; color: #fff; }
-  .action-btn:active { transform: scale(0.95); }
-  .loader-wrap { padding: 40px 0; text-align: center; }
-  .loader {
-    display: inline-block; width: 44px; height: 44px;
-    border: 3px solid var(--border); border-top-color: var(--accent);
-    border-radius: 50%; animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .empty { text-align: center; padding: 40px 20px; color: var(--hint); font-size: 14px; line-height: 1.6; }
-  .empty-icon { font-size: 56px; display: block; margin-bottom: 14px; opacity: 0.6; }
-  .history-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .history-item {
-    border-radius: 12px; overflow: hidden; background: var(--card); border: 1px solid var(--border);
-    cursor: pointer; aspect-ratio: 1; transition: transform 0.15s;
-  }
-  .history-item:active { transform: scale(0.96); }
-  .history-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .setting-row {
-    display: flex; justify-content: space-between; align-items: center;
+  .phrase:last-child { margin-bottom: 0; }
+  .phrase:active { transform: scale(0.98); border-color: var(--accent); background: rgba(99,102,241,0.1); }
+  .phrase .arrow { color: var(--accent); font-weight: 700; }
+
+  /* Settings rows */
+  .row {
+    display: flex; align-items: center; justify-content: space-between;
     padding: 14px 4px; border-bottom: 1px solid var(--border); gap: 12px;
   }
-  .setting-row:last-child { border-bottom: none; }
-  .setting-info { flex: 1; }
-  .setting-label { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
-  .setting-desc { font-size: 12px; color: var(--hint); }
-  .switch { position: relative; width: 48px; height: 28px; flex-shrink: 0; }
+  .row:last-child { border-bottom: none; }
+  .row-info { flex: 1; min-width: 0; }
+  .row-label { font-size: 15px; font-weight: 600; }
+  .row-desc { font-size: 12px; color: var(--hint); margin-top: 2px; }
+
+  /* Switch */
+  .switch { position: relative; width: 50px; height: 30px; flex-shrink: 0; }
   .switch input { opacity: 0; width: 0; height: 0; }
-  .switch-slider {
-    position: absolute; inset: 0; background: var(--card-solid); border: 1px solid var(--border);
-    border-radius: 28px; transition: 0.25s; cursor: pointer;
+  .switch-track {
+    position: absolute; inset: 0; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 30px;
+    transition: .25s; cursor: pointer;
   }
-  .switch-slider::before {
-    content: ''; position: absolute; width: 22px; height: 22px; border-radius: 50%;
-    background: #fff; top: 2px; left: 2px; transition: 0.25s; box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  .switch-track::before {
+    content: ''; position: absolute; width: 24px; height: 24px; border-radius: 50%;
+    background: #fff; top: 2px; left: 2px; transition: .25s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   }
-  .switch input:checked + .switch-slider { background: var(--accent); border-color: transparent; }
-  .switch input:checked + .switch-slider::before { transform: translateX(20px); }
-  .segment { display: flex; background: var(--card-solid); border-radius: 11px; padding: 3px; border: 1px solid var(--border); }
+  .switch input:checked + .switch-track { background: var(--accent); border-color: transparent; }
+  .switch input:checked + .switch-track::before { transform: translateX(20px); }
+
+  /* Segment */
+  .segment { display: flex; background: var(--surface2); border-radius: 12px; padding: 3px; border: 1px solid var(--border); }
   .segment button {
-    padding: 7px 12px; border-radius: 9px; border: none; background: transparent;
-    color: var(--text); font-size: 13px; font-family: inherit; cursor: pointer; font-weight: 600;
+    padding: 8px 12px; border-radius: 9px; border: none; background: transparent;
+    color: var(--text2); font-size: 13px; font-family: inherit;
+    cursor: pointer; font-weight: 700; transition: all .15s;
   }
-  .segment button.active { background: var(--accent); color: #fff; }
-  .danger-btn {
-    width: 100%; padding: 14px; border-radius: 12px;
-    border: 1px solid rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.1);
-    color: var(--danger); font-size: 15px; font-weight: 600; cursor: pointer;
-    font-family: inherit; margin-top: 8px;
+  .segment button.active { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(99,102,241,0.3); }
+
+  /* Color dots */
+  .color-dots { display: flex; gap: 10px; flex-wrap: wrap; padding: 4px 0; }
+  .dot {
+    width: 38px; height: 38px; border-radius: 50%;
+    cursor: pointer; transition: all .15s; position: relative;
+    border: 3px solid transparent;
   }
-  .bottom-nav {
+  .dot.active { border-color: #818cf8; transform: scale(1.1); }
+  .dot.active::after {
+    content: ''; position: absolute; inset: -6px;
+    border-radius: 50%; border: 1.5px solid rgba(129,140,248,0.4);
+  }
+  .dot:active { transform: scale(0.9); }
+
+  /* Primary button */
+  .btn-primary {
+    width: 100%; padding: 17px; border-radius: 16px; border: none;
+    background: var(--primary); color: #fff; font-size: 16px; font-weight: 800;
+    font-family: inherit; cursor: pointer; letter-spacing: 0.3px;
+    transition: transform .1s, box-shadow .2s;
+    box-shadow: 0 10px 26px rgba(99,102,241,0.45);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-top: 8px;
+  }
+  .btn-primary svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+  .btn-primary:active { transform: scale(0.97); }
+  .btn-primary:disabled { opacity: 0.5; }
+
+  /* Meme result */
+  .result { margin-top: 18px; display: flex; flex-direction: column; gap: 12px; }
+  .meme-img {
+    width: 100%; border-radius: var(--radius-lg);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    animation: pop .45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes pop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+  .result-actions { display: flex; gap: 8px; }
+  .btn-ghost {
+    flex: 1; padding: 14px; border-radius: 14px;
+    border: 1px solid var(--border-hi); background: var(--surface);
+    color: var(--text); font-size: 14px; font-weight: 700;
+    font-family: inherit; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: all .15s; backdrop-filter: blur(10px);
+  }
+  .btn-ghost svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+  .btn-ghost:active { transform: scale(0.95); }
+  .btn-ghost.primary { background: var(--primary); border-color: transparent; color: #fff; }
+
+  /* Loader */
+  .loader-wrap { padding: 50px 0; text-align: center; }
+  .spinner {
+    width: 44px; height: 44px; margin: 0 auto;
+    border: 3px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Empty */
+  .empty { text-align: center; padding: 50px 24px; color: var(--hint); }
+  .empty-icon {
+    width: 80px; height: 80px; margin: 0 auto 16px;
+    border-radius: 24px; background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .empty-icon svg { width: 34px; height: 34px; stroke: var(--hint); fill: none; stroke-width: 2; }
+  .empty-title { font-size: 15px; font-weight: 700; color: var(--text2); margin-bottom: 6px; }
+  .empty-text { font-size: 13px; line-height: 1.5; }
+
+  /* History */
+  .hist-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .hist-item {
+    border-radius: 14px; overflow: hidden; background: var(--surface);
+    border: 1px solid var(--border); cursor: pointer;
+    aspect-ratio: 1; transition: transform .15s;
+  }
+  .hist-item:active { transform: scale(0.96); }
+  .hist-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* Bottom nav */
+  .nav {
     position: fixed; bottom: 0; left: 0; right: 0;
-    background: var(--card); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-    border-top: 1px solid var(--border); display: flex; justify-content: space-around;
-    padding: 8px 8px calc(env(safe-area-inset-bottom, 0px) + 8px); z-index: 100;
+    background: rgba(10,14,26,0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-around;
+    padding: 8px 8px calc(env(safe-area-inset-bottom, 0px) + 8px);
+    z-index: 100;
   }
+  body.light .nav { background: rgba(248,250,252,0.9); }
   .nav-btn {
-    flex: 1; background: none; border: none; padding: 8px 4px; color: var(--hint);
-    font-family: inherit; font-size: 11px; font-weight: 600; cursor: pointer;
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-    border-radius: 12px; transition: all 0.2s;
+    flex: 1; background: none; border: none; padding: 8px 4px;
+    color: var(--hint); font-family: inherit; font-size: 10px; font-weight: 700;
+    cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    border-radius: 12px; transition: all .2s; letter-spacing: 0.3px;
   }
-  .nav-btn .nav-icon { font-size: 21px; line-height: 1; transition: transform 0.2s; }
-  .nav-btn.active { color: var(--accent); }
-  .nav-btn.active .nav-icon { transform: scale(1.15) translateY(-1px); }
+  .nav-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; transition: transform .2s; }
+  .nav-btn.active { color: #a5b4fc; }
+  .nav-btn.active svg { transform: scale(1.1) translateY(-1px); filter: drop-shadow(0 0 8px rgba(129,140,248,0.6)); }
+
+  /* Toast */
   .toast {
-    position: fixed; bottom: calc(env(safe-area-inset-bottom, 0px) + 90px); left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: var(--card-solid); color: var(--text); padding: 12px 20px;
-    border-radius: 13px; font-size: 14px; transition: transform 0.3s;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1000;
-    border: 1px solid var(--border); max-width: 80vw; text-align: center; font-weight: 500;
+    position: fixed; bottom: calc(env(safe-area-inset-bottom, 0px) + 100px); left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: var(--surface2); color: var(--text); padding: 13px 22px;
+    border-radius: 14px; font-size: 14px; font-weight: 600;
+    transition: transform .3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+    z-index: 1000; border: 1px solid var(--border-hi);
+    max-width: 85vw; text-align: center;
+    backdrop-filter: blur(20px);
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
-  .confetti { position: fixed; width: 8px; height: 8px; pointer-events: none; z-index: 999; animation: confetti-fall 1.3s linear forwards; }
-  @keyframes confetti-fall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
-  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
-  .modal.show { display: flex; }
-  .modal-content { max-width: 100%; max-height: 90vh; display: flex; flex-direction: column; gap: 12px; align-items: center; }
-  .modal-content img { max-width: 100%; max-height: 70vh; border-radius: 14px; }
-  .modal-actions { display: flex; gap: 8px; width: 100%; max-width: 400px; }
-  .close-modal {
-    position: absolute; top: calc(env(safe-area-inset-top, 0px) + 16px); right: 16px;
-    width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.15);
-    border: none; color: #fff; font-size: 20px; cursor: pointer; backdrop-filter: blur(12px);
+
+  /* Confetti */
+  .cf { position: fixed; width: 8px; height: 8px; pointer-events: none; z-index: 999; animation: cfFall 1.3s linear forwards; }
+  @keyframes cfFall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
+  /* Modal */
+  .modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+    z-index: 2000; display: none; align-items: center; justify-content: center;
+    padding: 20px; backdrop-filter: blur(10px);
   }
+  .modal.show { display: flex; animation: fadeIn .2s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal-inner { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 14px; }
+  .modal-inner img { width: 100%; border-radius: 16px; max-height: 65vh; object-fit: contain; }
+  .modal-x {
+    position: absolute; top: calc(env(safe-area-inset-top, 0px) + 18px); right: 18px;
+    width: 42px; height: 42px; border-radius: 50%;
+    background: rgba(255,255,255,0.15); border: none; color: #fff;
+    cursor: pointer; backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-x svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+
+  .danger-btn {
+    width: 100%; padding: 14px; border-radius: 14px;
+    border: 1px solid rgba(239,68,68,0.3); background: rgba(239,68,68,0.08);
+    color: #f87171; font-size: 15px; font-weight: 700;
+    cursor: pointer; font-family: inherit; margin-top: 10px;
+    transition: all .15s;
+  }
+  .danger-btn:active { transform: scale(0.97); background: rgba(239,68,68,0.15); }
 </style>
 </head>
 <body>
 
-<div class="bg-blobs">
-  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
-</div>
+<div class="bg"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
 
-<header class="app-header">
-  <h1>Мем-Студия</h1>
-  <div class="sub">Создано: <b id="counter">0</b></div>
+<header class="header">
+  <div class="brand">
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/></svg>
+    </div>
+    <div class="brand-text">
+      <h1>Мем-Студия</h1>
+      <div class="sub">СОЗДАЙ · ПОДЕЛИСЬ</div>
+    </div>
+  </div>
+  <div class="stat-badge">
+    <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6z"/></svg>
+    <span id="counter">0</span>
+  </div>
 </header>
 
 <main class="main">
 
   <section class="tab active" id="tab-generator">
-    <div class="section-title"><span>Источник</span></div>
-    <div class="categories" id="sourceTabs">
-      <button class="cat-btn" data-source="photo">📸 Своё фото</button>
-      <button class="cat-btn active" data-source="template">🎬 Шаблоны</button>
+    <div class="sec-head">
+      <span class="sec-title">Источник</span>
+    </div>
+    <div class="chips" id="sourceTabs">
+      <button class="chip" data-source="photo">
+        <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        Своё фото
+      </button>
+      <button class="chip active" data-source="template">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        Шаблоны
+      </button>
     </div>
 
-    <div id="photoSource" style="display:none">
-      <div id="uploadZone" class="upload-zone">
-        <span class="icon">📸</span>
-        <div class="title">Загрузить своё фото</div>
-        <div class="desc">Из галереи. Текст добавится сверху и снизу.</div>
+    <div id="photoSource" style="display:none; margin-top:12px;">
+      <div class="upload" id="uploadZone">
+        <div class="upload-icon">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <div class="upload-title">Загрузить фото</div>
+        <div class="upload-desc">Из галереи · JPG, PNG</div>
       </div>
       <input type="file" id="photoInput" accept="image/*" style="display:none">
-      <div id="photoPreview" style="display:none" class="photo-preview">
+      <div id="photoPreview" style="display:none" class="photo-wrap">
         <img id="photoImg" src="" alt="">
-        <button class="remove-photo" id="removePhoto">✕</button>
+        <button class="photo-x" id="removePhoto">
+          <svg viewBox="0 0 24 24" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
     </div>
 
-    <div id="templateSource">
-      <div class="section-title">
-        <span>Категории</span>
-        <button class="link" id="randomBtn">🎲 Случайный</button>
+    <div id="templateSource" style="margin-top:12px;">
+      <div class="sec-head" style="margin-top:6px;">
+        <span class="sec-title">Категории</span>
+        <button class="sec-action" id="randomBtn">
+          <svg viewBox="0 0 24 24"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+          Случайный
+        </button>
       </div>
-      <div class="categories" id="categories"></div>
+      <div class="chips" id="categories"></div>
       <div class="templates" id="templates"></div>
     </div>
 
-    <div class="section-title">Текст мема</div>
+    <div class="sec-head">
+      <span class="sec-title">Текст мема</span>
+    </div>
     <div class="card">
-      <div class="input-group">
-        <input type="text" id="topText" placeholder="Верхний текст..." maxlength="60">
-        <button class="clear-input" data-target="topText">✕</button>
+      <div class="in-group">
+        <input type="text" class="input" id="topText" placeholder="Верхний текст..." maxlength="60">
+        <button class="in-x" data-target="topText">
+          <svg viewBox="0 0 24 24" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
-      <div class="emoji-row" id="emojiRowTop"></div>
-      <div class="input-group">
-        <input type="text" id="bottomText" placeholder="Нижний текст..." maxlength="60">
-        <button class="clear-input" data-target="bottomText">✕</button>
+      <div class="emoji-line" id="emojiRowTop"></div>
+      <div class="in-group">
+        <input type="text" class="input" id="bottomText" placeholder="Нижний текст..." maxlength="60">
+        <button class="in-x" data-target="bottomText">
+          <svg viewBox="0 0 24 24" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
-      <div class="emoji-row" id="emojiRowBottom"></div>
+      <div class="emoji-line" id="emojiRowBottom"></div>
     </div>
 
-    <div class="section-title">
-      <span>Быстрые фразы</span>
-      <button class="link" id="rerollPhrases">🔄 Другие</button>
+    <div class="sec-head">
+      <span class="sec-title">Быстрые фразы</span>
+      <button class="sec-action" id="rerollPhrases">
+        <svg viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        Другие
+      </button>
     </div>
     <div class="card" id="phrasesCard"></div>
 
-    <div class="section-title">Настройки текста</div>
+    <div class="sec-head"><span class="sec-title">Настройки текста</span></div>
     <div class="card">
-      <div class="setting-row">
-        <div class="setting-info"><div class="setting-label">Шрифт</div></div>
+      <div class="row">
+        <div class="row-info"><div class="row-label">Шрифт</div></div>
         <div class="segment" id="fontSegment">
           <button data-font="impact" class="active">Impact</button>
           <button data-font="arial">Arial</button>
           <button data-font="comic">Comic</button>
         </div>
       </div>
-      <div class="setting-row">
-        <div class="setting-info"><div class="setting-label">Размер</div></div>
+      <div class="row">
+        <div class="row-info"><div class="row-label">Размер</div></div>
         <div class="segment" id="sizeSegment">
-          <button data-size="small">Мал</button>
-          <button data-size="medium" class="active">Сред</button>
-          <button data-size="large">Бол</button>
+          <button data-size="small">S</button>
+          <button data-size="medium" class="active">M</button>
+          <button data-size="large">L</button>
         </div>
       </div>
-      <div class="setting-row" style="flex-direction:column; align-items:flex-start;">
-        <div class="setting-info" style="width:100%;">
-          <div class="setting-label">Цвет текста</div>
-        </div>
-        <div class="color-row" id="colorRow"></div>
+      <div class="row" style="flex-direction:column; align-items:flex-start;">
+        <div class="row-info"><div class="row-label">Цвет текста</div></div>
+        <div class="color-dots" id="colorRow"></div>
       </div>
-      <div class="setting-row">
-        <div class="setting-info">
-          <div class="setting-label">Обводка</div>
-          <div class="setting-desc">Виден текст на любом фоне</div>
+      <div class="row">
+        <div class="row-info">
+          <div class="row-label">Обводка</div>
+          <div class="row-desc">Виден на любом фоне</div>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="outlineToggle" checked>
-          <span class="switch-slider"></span>
-        </label>
+        <label class="switch"><input type="checkbox" id="outlineToggle" checked><span class="switch-track"></span></label>
       </div>
-      <div class="setting-row">
-        <div class="setting-info">
-          <div class="setting-label">Затемнить края</div>
-          <div class="setting-desc">Верх и низ темнее</div>
+      <div class="row">
+        <div class="row-info">
+          <div class="row-label">Затемнить края</div>
+          <div class="row-desc">Верх и низ темнее</div>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="gradientToggle" checked>
-          <span class="switch-slider"></span>
-        </label>
+        <label class="switch"><input type="checkbox" id="gradientToggle" checked><span class="switch-track"></span></label>
       </div>
     </div>
 
-    <button class="generate-btn" id="generateBtn">🎨 Сгенерировать мем</button>
+    <button class="btn-primary" id="generateBtn">
+      <svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6z"/></svg>
+      Сгенерировать мем
+    </button>
 
-    <div class="meme-container" id="memeContainer">
+    <div class="result" id="memeContainer">
       <div class="empty">
-        <span class="empty-icon">🖼️</span>
-        Здесь появится твой мем
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        </div>
+        <div class="empty-title">Здесь появится твой мем</div>
+        <div class="empty-text">Выбери шаблон или загрузи своё фото</div>
       </div>
     </div>
   </section>
 
   <section class="tab" id="tab-history">
-    <div class="section-title">
-      <span>Твои мемы</span>
-      <button class="link" id="clearHistoryBtn">Очистить</button>
+    <div class="sec-head">
+      <span class="sec-title">Твои мемы</span>
+      <button class="sec-action" id="clearHistoryBtn">Очистить</button>
     </div>
     <div id="historyContainer"></div>
   </section>
 
   <section class="tab" id="tab-settings">
-    <div class="section-title">Внешний вид</div>
+    <div class="sec-head"><span class="sec-title">Внешний вид</span></div>
     <div class="card">
-      <div class="setting-row">
-        <div class="setting-info"><div class="setting-label">Тема</div></div>
+      <div class="row">
+        <div class="row-info"><div class="row-label">Тема</div></div>
         <div class="segment" id="themeSegment">
           <button data-theme="auto">Авто</button>
-          <button data-theme="dark">Тёмная</button>
-          <button data-theme="light">Светлая</button>
+          <button data-theme="dark">Dark</button>
+          <button data-theme="light">Light</button>
         </div>
       </div>
     </div>
-    <div class="section-title">Генерация</div>
+    <div class="sec-head"><span class="sec-title">Генерация</span></div>
     <div class="card">
-      <div class="setting-row">
-        <div class="setting-info">
-          <div class="setting-label">Авто-сохранение</div>
-          <div class="setting-desc">Сохранять в историю</div>
+      <div class="row">
+        <div class="row-info">
+          <div class="row-label">Авто-сохранение</div>
+          <div class="row-desc">Сохранять в историю</div>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="autosaveToggle" checked>
-          <span class="switch-slider"></span>
-        </label>
+        <label class="switch"><input type="checkbox" id="autosaveToggle" checked><span class="switch-track"></span></label>
       </div>
     </div>
-    <div class="section-title">Данные</div>
+    <div class="sec-head"><span class="sec-title">Данные</span></div>
     <div class="card">
-      <div class="setting-row">
-        <div class="setting-info">
-          <div class="setting-label">Всего сгенерировано</div>
-          <div class="setting-desc" id="totalCount">0 мемов</div>
+      <div class="row">
+        <div class="row-info">
+          <div class="row-label">Всего сгенерировано</div>
+          <div class="row-desc" id="totalCount">0 мемов</div>
         </div>
       </div>
-      <div class="setting-row">
-        <div class="setting-info">
-          <div class="setting-label">В истории</div>
-          <div class="setting-desc" id="historyCount">0 мемов</div>
+      <div class="row">
+        <div class="row-info">
+          <div class="row-label">В истории</div>
+          <div class="row-desc" id="historyCount">0 мемов</div>
         </div>
       </div>
-      <button class="danger-btn" id="resetAllBtn">🗑 Сбросить всё</button>
+      <button class="danger-btn" id="resetAllBtn">Сбросить всё</button>
     </div>
   </section>
 
 </main>
 
-<nav class="bottom-nav">
+<nav class="nav">
   <button class="nav-btn active" data-tab="generator">
-    <span class="nav-icon">🎨</span><span>Генератор</span>
+    <svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6z"/></svg>
+    Создать
   </button>
   <button class="nav-btn" data-tab="history">
-    <span class="nav-icon">📚</span><span>История</span>
+    <svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+    История
   </button>
   <button class="nav-btn" data-tab="settings">
-    <span class="nav-icon">⚙️</span><span>Настройки</span>
+    <svg viewBox="0 0 24 24" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 008 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 8a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    Настройки
   </button>
 </nav>
 
 <div class="toast" id="toast"></div>
 
 <div class="modal" id="modal">
-  <button class="close-modal" id="closeModal">✕</button>
-  <div class="modal-content">
+  <button class="modal-x" id="closeModal">
+    <svg viewBox="0 0 24 24" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="modal-inner">
     <img id="modalImg" src="" alt="">
-    <div class="modal-actions">
-      <button class="action-btn primary" id="modalShare">📤 Поделиться</button>
-      <button class="action-btn" id="modalDownload">⬇️ Скачать</button>
+    <div class="result-actions">
+      <button class="btn-ghost primary" id="modalShare">
+        <svg viewBox="0 0 24 24" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Поделиться
+      </button>
+      <button class="btn-ghost" id="modalDownload">
+        <svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Скачать
+      </button>
     </div>
   </div>
 </div>
@@ -459,83 +652,83 @@
 const tg = window.Telegram?.WebApp;
 if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
 
-/* ============ ШАБЛОНЫ ============ */
+/* ============ ДАННЫЕ ============ */
 const TEMPLATES = [
-  { id: 'drake',       name: 'Дрейк',         cat: 'classic',  url: 'https://i.imgflip.com/30b1gx.jpg' },
-  { id: 'buttons',     name: 'Две кнопки',    cat: 'classic',  url: 'https://i.imgflip.com/1g8my4.jpg' },
-  { id: 'change',      name: 'Change My Mind',cat: 'classic',  url: 'https://i.imgflip.com/24y43o.jpg' },
-  { id: 'ancient',     name: 'Древние',       cat: 'classic',  url: 'https://i.imgflip.com/26am.jpg' },
-  { id: 'rollsafe',    name: 'Smart',         cat: 'classic',  url: 'https://i.imgflip.com/1h7in3.jpg' },
-  { id: 'onedoesnot',  name: 'Боромир',       cat: 'classic',  url: 'https://i.imgflip.com/1bij.jpg' },
-  { id: 'philosoraptor', name: 'Философ',     cat: 'classic',  url: 'https://i.imgflip.com/1bip.jpg' },
-  { id: 'yuno',        name: 'Y U NO',        cat: 'classic',  url: 'https://i.imgflip.com/1bh9.jpg' },
-  { id: 'distracted',  name: 'Отвлёкся',      cat: 'react',    url: 'https://i.imgflip.com/1ur9b0.jpg' },
-  { id: 'disaster',    name: 'Пожар',         cat: 'react',    url: 'https://i.imgflip.com/23ls.jpg' },
-  { id: 'mocking',     name: 'Спанч',         cat: 'react',    url: 'https://i.imgflip.com/1otk96.jpg' },
-  { id: 'awkward',     name: 'Обезьяна',      cat: 'react',    url: 'https://i.imgflip.com/3lmzyx.jpg' },
-  { id: 'woman-cat',   name: 'Кошка',         cat: 'react',    url: 'https://i.imgflip.com/345v97.jpg' },
-  { id: 'batman',      name: 'Бэтмен',        cat: 'react',    url: 'https://i.imgflip.com/9ehk.jpg' },
-  { id: 'fry',         name: 'Фрай',          cat: 'react',    url: 'https://i.imgflip.com/1bgw.jpg' },
-  { id: 'facepalm',    name: 'Фейспалм',      cat: 'react',    url: 'https://i.imgflip.com/1bg8.jpg' },
-  { id: 'doge',        name: 'Doge',          cat: 'animals',  url: 'https://i.imgflip.com/4t0m5.jpg' },
-  { id: 'grumpy',      name: 'Грампи',        cat: 'animals',  url: 'https://i.imgflip.com/8p0a.jpg' },
-  { id: 'success',     name: 'Успех',         cat: 'animals',  url: 'https://i.imgflip.com/1bhk.jpg' },
-  { id: 'sadfrog',     name: 'Грусть',        cat: 'animals',  url: 'https://i.imgflip.com/5g9dqm.jpg' },
-  { id: 'owl',         name: 'Сова',          cat: 'animals',  url: 'https://i.imgflip.com/2gnnjh.jpg' },
-  { id: 'thisfine',    name: 'This is Fine',  cat: 'cartoon',  url: 'https://i.imgflip.com/wxica.jpg' },
-  { id: 'oprah',       name: 'Опра',          cat: 'cartoon',  url: 'https://i.imgflip.com/1bh8.jpg' },
-  { id: 'squidward',   name: 'Сквид',         cat: 'cartoon',  url: 'https://i.imgflip.com/2v5wr6.jpg' },
-  { id: 'yodawg',      name: 'Йода',          cat: 'cartoon',  url: 'https://i.imgflip.com/1b42wl.jpg' },
-  { id: 'tenguy',      name: 'Джентльмен',    cat: 'cartoon',  url: 'https://i.imgflip.com/1bgs0z.jpg' },
-  { id: 'firstworld',  name: 'First World',   cat: 'new',      url: 'https://i.imgflip.com/1bh1.jpg' },
-  { id: 'forever',     name: 'Forever Alone', cat: 'new',      url: 'https://i.imgflip.com/9ehk.jpg' },
-  { id: 'badluck',     name: 'Bad Luck',      cat: 'new',      url: 'https://i.imgflip.com/1bh4.jpg' },
-  { id: 'confession',  name: 'Признание',     cat: 'new',      url: 'https://i.imgflip.com/1bh5.jpg' },
-  { id: 'keepcalm',    name: 'Keep Calm',     cat: 'new',      url: 'https://i.imgflip.com/24u2s5.jpg' },
-  { id: 'grandma',     name: 'Бабушка',       cat: 'new',      url: 'https://i.imgflip.com/3b1nc9.jpg' }
+  { id:'drake', name:'Дрейк', cat:'classic', url:'https://i.imgflip.com/30b1gx.jpg' },
+  { id:'buttons', name:'Две кнопки', cat:'classic', url:'https://i.imgflip.com/1g8my4.jpg' },
+  { id:'change', name:'Change My Mind', cat:'classic', url:'https://i.imgflip.com/24y43o.jpg' },
+  { id:'ancient', name:'Древние', cat:'classic', url:'https://i.imgflip.com/26am.jpg' },
+  { id:'rollsafe', name:'Smart', cat:'classic', url:'https://i.imgflip.com/1h7in3.jpg' },
+  { id:'onedoesnot', name:'Боромир', cat:'classic', url:'https://i.imgflip.com/1bij.jpg' },
+  { id:'philosoraptor', name:'Философ', cat:'classic', url:'https://i.imgflip.com/1bip.jpg' },
+  { id:'yuno', name:'Y U NO', cat:'classic', url:'https://i.imgflip.com/1bh9.jpg' },
+  { id:'distracted', name:'Отвлёкся', cat:'react', url:'https://i.imgflip.com/1ur9b0.jpg' },
+  { id:'disaster', name:'Пожар', cat:'react', url:'https://i.imgflip.com/23ls.jpg' },
+  { id:'mocking', name:'Спанч', cat:'react', url:'https://i.imgflip.com/1otk96.jpg' },
+  { id:'awkward', name:'Обезьяна', cat:'react', url:'https://i.imgflip.com/3lmzyx.jpg' },
+  { id:'woman-cat', name:'Кошка', cat:'react', url:'https://i.imgflip.com/345v97.jpg' },
+  { id:'batman', name:'Бэтмен', cat:'react', url:'https://i.imgflip.com/9ehk.jpg' },
+  { id:'fry', name:'Фрай', cat:'react', url:'https://i.imgflip.com/1bgw.jpg' },
+  { id:'facepalm', name:'Фейспалм', cat:'react', url:'https://i.imgflip.com/1bg8.jpg' },
+  { id:'doge', name:'Doge', cat:'animals', url:'https://i.imgflip.com/4t0m5.jpg' },
+  { id:'grumpy', name:'Грампи', cat:'animals', url:'https://i.imgflip.com/8p0a.jpg' },
+  { id:'success', name:'Успех', cat:'animals', url:'https://i.imgflip.com/1bhk.jpg' },
+  { id:'sadfrog', name:'Грусть', cat:'animals', url:'https://i.imgflip.com/5g9dqm.jpg' },
+  { id:'owl', name:'Сова', cat:'animals', url:'https://i.imgflip.com/2gnnjh.jpg' },
+  { id:'thisfine', name:'This is Fine', cat:'cartoon', url:'https://i.imgflip.com/wxica.jpg' },
+  { id:'oprah', name:'Опра', cat:'cartoon', url:'https://i.imgflip.com/1bh8.jpg' },
+  { id:'squidward', name:'Сквид', cat:'cartoon', url:'https://i.imgflip.com/2v5wr6.jpg' },
+  { id:'yodawg', name:'Йода', cat:'cartoon', url:'https://i.imgflip.com/1b42wl.jpg' },
+  { id:'tenguy', name:'Джентльмен', cat:'cartoon', url:'https://i.imgflip.com/1bgs0z.jpg' },
+  { id:'firstworld', name:'First World', cat:'new', url:'https://i.imgflip.com/1bh1.jpg' },
+  { id:'forever', name:'Forever Alone', cat:'new', url:'https://i.imgflip.com/9ehk.jpg' },
+  { id:'badluck', name:'Bad Luck', cat:'new', url:'https://i.imgflip.com/1bh4.jpg' },
+  { id:'confession', name:'Признание', cat:'new', url:'https://i.imgflip.com/1bh5.jpg' },
+  { id:'keepcalm', name:'Keep Calm', cat:'new', url:'https://i.imgflip.com/24u2s5.jpg' },
+  { id:'grandma', name:'Бабушка', cat:'new', url:'https://i.imgflip.com/3b1nc9.jpg' }
 ];
 
 const CATEGORIES = [
-  { id: 'all',     name: 'Все',       emoji: '✨' },
-  { id: 'classic', name: 'Классика',  emoji: '🎬' },
-  { id: 'react',   name: 'Реакции',   emoji: '😱' },
-  { id: 'animals', name: 'Животные',  emoji: '🐾' },
-  { id: 'cartoon', name: 'Мульты',    emoji: '🎭' },
-  { id: 'new',     name: 'Ещё',       emoji: '🆕' }
+  { id:'all', name:'Все', emoji:'✨' },
+  { id:'classic', name:'Классика', emoji:'🎬' },
+  { id:'react', name:'Реакции', emoji:'😱' },
+  { id:'animals', name:'Звери', emoji:'🐾' },
+  { id:'cartoon', name:'Мульты', emoji:'🎭' },
+  { id:'new', name:'Ещё', emoji:'🆕' }
 ];
 
 const QUICK_EMOJI = ['😂','🔥','💀','😎','🤡','👀','💯','🚀','😭','🤔','❤️','✨','👑','💪','🧠','🤯','😱','🤣','👍','🙏','💩','⚡','🎉','🤝'];
 
 const TEXT_COLORS = [
-  { id: 'white',  value: '#ffffff', label: 'Белый' },
-  { id: 'black',  value: '#000000', label: 'Чёрный' },
-  { id: 'yellow', value: '#fbbf24', label: 'Жёлтый' },
-  { id: 'red',    value: '#ef4444', label: 'Красный' },
-  { id: 'green',  value: '#10b981', label: 'Зелёный' },
-  { id: 'blue',   value: '#60a5fa', label: 'Синий' }
+  { id:'white', value:'#ffffff' },
+  { id:'black', value:'#000000' },
+  { id:'yellow', value:'#fbbf24' },
+  { id:'red', value:'#ef4444' },
+  { id:'green', value:'#10b981' },
+  { id:'blue', value:'#60a5fa' }
 ];
 
 const PHRASES_POOL = [
-  { top: 'Когда понял, что', bottom: 'уже поздно' },
-  { top: 'Я в 3 часа ночи', bottom: 'вместо сна' },
-  { top: 'Мама сказала', bottom: 'я сделал наоборот' },
-  { top: 'Никто:', bottom: 'Я в 5 утра:' },
-  { top: 'Понедельник', bottom: 'Опять ты' },
-  { top: 'Я после 2 чашек кофе', bottom: 'Спокойствие' },
-  { top: 'Когда проверил баланс', bottom: 'Я в шоке' },
-  { top: 'Мой план', bottom: 'Реальность' },
-  { top: 'Хочу спать', bottom: 'Но телефон сам себя не полистает' },
-  { top: 'Ожидание', bottom: 'Реальность' },
-  { top: 'Когда сказали', bottom: '«Работать в выходные»' },
-  { top: 'Я и мой будильник', bottom: 'Враг на всю жизнь' },
-  { top: 'Мне 30', bottom: 'Понял, что ничего не понял' },
-  { top: 'Когда зашёл в холодильник', bottom: 'В третий раз за час' },
-  { top: 'Обещал себе', bottom: 'Начать с понедельника' },
-  { top: 'Скажу честно', bottom: 'Ничего не понял' },
-  { top: 'Когда друг зовёт гулять', bottom: 'А я уже в пижаме' },
-  { top: 'Утро', bottom: 'Зачем ты пришло' },
-  { top: 'Когда мама спрашивает', bottom: 'Как дела в школе' },
-  { top: 'Я и мои планы', bottom: 'Разные вселенные' }
+  { top:'Когда понял, что', bottom:'уже поздно' },
+  { top:'Я в 3 часа ночи', bottom:'вместо сна' },
+  { top:'Мама сказала', bottom:'я сделал наоборот' },
+  { top:'Никто:', bottom:'Я в 5 утра:' },
+  { top:'Понедельник', bottom:'Опять ты' },
+  { top:'После 2 чашек кофе', bottom:'Спокойствие' },
+  { top:'Когда проверил баланс', bottom:'Я в шоке' },
+  { top:'Мой план', bottom:'Реальность' },
+  { top:'Хочу спать', bottom:'Но телефон сам себя не полистает' },
+  { top:'Ожидание', bottom:'Реальность' },
+  { top:'Сказали работать', bottom:'в выходные' },
+  { top:'Я и мой будильник', bottom:'Враги' },
+  { top:'Мне 30', bottom:'Ничего не понял' },
+  { top:'Зашёл в холодильник', bottom:'В третий раз' },
+  { top:'Обещал себе', bottom:'С понедельника' },
+  { top:'Скажу честно', bottom:'Ничего не понял' },
+  { top:'Друг зовёт гулять', bottom:'Я уже в пижаме' },
+  { top:'Утро', bottom:'Зачем ты пришло' },
+  { top:'Как дела в школе', bottom:'Мама, я давно вырос' },
+  { top:'Я и мои планы', bottom:'Разные вселенные' }
 ];
 
 /* ============ ХРАНИЛИЩЕ ============ */
@@ -549,27 +742,25 @@ const store = {
 };
 
 const settings = Object.assign({
-  theme: 'auto', autosave: true, defaultTemplate: 'drake',
-  font: 'impact', size: 'medium', outline: true, gradient: true, textColor: 'white'
+  theme:'auto', autosave:true, defaultTemplate:'drake',
+  font:'impact', size:'medium', outline:true, gradient:true, textColor:'white'
 }, store.settings);
 
 let selectedTemplate = settings.defaultTemplate;
 let selectedCategory = 'all';
 let selectedSource = 'template';
 let userPhoto = null;
-let currentPhrases = [];
 
 /* ============ ТЕМА ============ */
 function applyTheme() {
   let t = settings.theme;
   if (t === 'auto') t = tg?.colorScheme === 'light' ? 'light' : 'dark';
   document.body.classList.toggle('light', t === 'light');
-  try { if (tg?.setHeaderColor) tg.setHeaderColor(t === 'light' ? '#f8fafc' : '#0a0e18'); } catch(e){}
+  try { if (tg?.setHeaderColor) tg.setHeaderColor(t === 'light' ? '#f8fafc' : '#0a0e1a'); } catch(e){}
   document.querySelectorAll('#themeSegment button').forEach(b =>
     b.classList.toggle('active', b.dataset.theme === settings.theme));
 }
 
-/* ============ СЧЁТЧИКИ ============ */
 function updateCounters() {
   document.getElementById('counter').textContent = store.count.toLocaleString('ru-RU');
   document.getElementById('totalCount').textContent = store.count.toLocaleString('ru-RU') + ' мемов';
@@ -577,7 +768,7 @@ function updateCounters() {
 }
 
 /* ============ ШАБЛОНЫ ============ */
-function proxiedUrl(url, w) {
+function proxied(url, w) {
   return `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&w=${w}&output=jpg`;
 }
 
@@ -586,12 +777,11 @@ function renderCategories() {
   el.innerHTML = '';
   CATEGORIES.forEach(c => {
     const btn = document.createElement('button');
-    btn.className = 'cat-btn' + (c.id === selectedCategory ? ' active' : '');
+    btn.className = 'chip' + (c.id === selectedCategory ? ' active' : '');
     btn.textContent = `${c.emoji} ${c.name}`;
     btn.onclick = () => {
       selectedCategory = c.id;
-      renderCategories();
-      renderTemplates();
+      renderCategories(); renderTemplates();
       if (tg) tg.HapticFeedback?.selectionChanged();
     };
     el.appendChild(btn);
@@ -604,41 +794,31 @@ function renderTemplates() {
   const list = selectedCategory === 'all' ? TEMPLATES : TEMPLATES.filter(t => t.cat === selectedCategory);
   list.forEach((t, i) => {
     const btn = document.createElement('button');
-    btn.className = 'template-btn' + (t.id === selectedTemplate ? ' active' : '');
+    btn.className = 'tpl' + (t.id === selectedTemplate ? ' active' : '');
     btn.innerHTML = `
-      <div class="template-thumb">
-        <img data-src="${proxiedUrl(t.url, 150)}" alt="" loading="lazy" style="opacity:0;transition:opacity .3s">
-      </div>
-      <span class="template-name">${t.name}</span>
+      <div class="tpl-thumb"><img data-src="${proxied(t.url,150)}" alt=""></div>
+      <span class="tpl-name">${t.name}</span>
     `;
     btn.onclick = () => {
       selectedTemplate = t.id;
       settings.defaultTemplate = t.id;
-      saveSettings();
-      renderTemplates();
+      saveSettings(); renderTemplates();
       if (tg) tg.HapticFeedback?.selectionChanged();
     };
     el.appendChild(btn);
   });
-  lazyLoadThumbs();
-}
-
-// Ленивая загрузка превью с задержкой — чтобы не блочить UI
-function lazyLoadThumbs() {
-  const imgs = document.querySelectorAll('#templates img[data-src]');
-  imgs.forEach((img, idx) => {
+  // Ленивая загрузка
+  document.querySelectorAll('#templates img[data-src]').forEach((img, idx) => {
     setTimeout(() => {
-      const src = img.dataset.src;
-      if (!src) return;
-      img.onload = () => { img.style.opacity = '1'; };
-      img.onerror = () => { img.style.opacity = '0'; img.parentElement.textContent = '🖼️'; };
-      img.src = src;
-    }, idx * 60); // по одной каждые 60мс
+      img.onload = () => img.classList.add('loaded');
+      img.onerror = () => { img.parentElement.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;opacity:.4">🖼️</div>'; };
+      img.src = img.dataset.src;
+    }, idx * 70);
   });
 }
 
-function renderEmojiRows() {
-  ['emojiRowTop', 'emojiRowBottom'].forEach((id, idx) => {
+function renderEmoji() {
+  ['emojiRowTop','emojiRowBottom'].forEach((id, idx) => {
     const el = document.getElementById(id);
     el.innerHTML = '';
     QUICK_EMOJI.forEach(e => {
@@ -648,7 +828,7 @@ function renderEmojiRows() {
       b.onclick = () => {
         const input = document.getElementById(idx === 0 ? 'topText' : 'bottomText');
         input.value += e;
-        input.focus();
+        updateX();
         if (tg) tg.HapticFeedback?.impactOccurred('light');
       };
       el.appendChild(b);
@@ -661,13 +841,11 @@ function renderColors() {
   el.innerHTML = '';
   TEXT_COLORS.forEach(c => {
     const b = document.createElement('div');
-    b.className = 'color-dot' + (c.id === settings.textColor ? ' active' : '');
+    b.className = 'dot' + (c.id === settings.textColor ? ' active' : '');
     b.style.background = c.value;
-    b.style.border = c.id === 'white' ? '2px solid rgba(255,255,255,0.3)' : '';
+    if (c.id === 'white') b.style.border = '1px solid rgba(255,255,255,0.3)';
     b.onclick = () => {
-      settings.textColor = c.id;
-      saveSettings();
-      renderColors();
+      settings.textColor = c.id; saveSettings(); renderColors();
       if (tg) tg.HapticFeedback?.selectionChanged();
     };
     el.appendChild(b);
@@ -675,19 +853,17 @@ function renderColors() {
 }
 
 function renderPhrases() {
-  // Выбираем 3 случайные фразы
   const shuffled = [...PHRASES_POOL].sort(() => Math.random() - 0.5);
-  currentPhrases = shuffled.slice(0, 3);
   const el = document.getElementById('phrasesCard');
   el.innerHTML = '';
-  currentPhrases.forEach(p => {
+  shuffled.slice(0, 3).forEach(p => {
     const b = document.createElement('button');
-    b.className = 'phrase-btn';
-    b.textContent = `${p.top} → ${p.bottom}`;
+    b.className = 'phrase';
+    b.innerHTML = `${p.top} <span class="arrow">→</span> ${p.bottom}`;
     b.onclick = () => {
       document.getElementById('topText').value = p.top;
       document.getElementById('bottomText').value = p.bottom;
-      updateClearButtons();
+      updateX();
       if (tg) tg.HapticFeedback?.impactOccurred('light');
       showToast('Фраза подставлена');
     };
@@ -695,89 +871,77 @@ function renderPhrases() {
   });
 }
 
-function updateClearButtons() {
-  ['topText', 'bottomText'].forEach(id => {
-    const input = document.getElementById(id);
-    const btn = input.parentElement.querySelector('.clear-input');
-    btn.style.display = input.value ? 'flex' : 'none';
+function updateX() {
+  ['topText','bottomText'].forEach(id => {
+    const inp = document.getElementById(id);
+    const x = inp.parentElement.querySelector('.in-x');
+    x.style.display = inp.value ? 'flex' : 'none';
   });
 }
 
 /* ============ УТИЛИТЫ ============ */
-function showToast(msg) {
+function showToast(m) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
+  t.textContent = m;
   t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 2400);
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 2400);
 }
 function saveSettings() { store.settings = settings; }
 
-function confettiBurst() {
-  const colors = ['#3b82f6','#60a5fa','#a78bfa','#10b981','#fbbf24'];
-  for (let i = 0; i < 22; i++) {
+function confetti() {
+  const colors = ['#6366f1','#8b5cf6','#ec4899','#10b981','#fbbf24'];
+  for (let i = 0; i < 24; i++) {
     const c = document.createElement('div');
-    c.className = 'confetti';
+    c.className = 'cf';
     c.style.background = colors[i % colors.length];
     c.style.left = (50 + (Math.random() - 0.5) * 40) + '%';
     c.style.top = '40%';
-    c.style.transform = `translateX(${(Math.random() - 0.5) * 100}px)`;
-    c.style.animationDelay = (Math.random() * 0.2) + 's';
+    c.style.animationDelay = (Math.random() * .2) + 's';
     document.body.appendChild(c);
     setTimeout(() => c.remove(), 1600);
   }
 }
 
 /* ============ ТЕКСТ ============ */
-function getFont() {
+function font() {
   if (settings.font === 'arial') return 'Arial, sans-serif';
   if (settings.font === 'comic') return '"Comic Sans MS", cursive';
   return 'Impact, "Arial Narrow", sans-serif';
 }
-function getSize(base) {
-  if (settings.size === 'small') return base * 0.7;
-  if (settings.size === 'large') return base * 1.3;
-  return base;
-}
-function getTextColor() {
-  const c = TEXT_COLORS.find(x => x.id === settings.textColor);
-  return c ? c.value : '#ffffff';
-}
-function getOutlineColor() {
-  // контрастная обводка
-  return settings.textColor === 'black' ? '#ffffff' : '#000000';
-}
-function drawText(ctx, text, x, y, maxWidth, fontSize, isTop) {
+function sz(b) { return settings.size === 'small' ? b*.7 : settings.size === 'large' ? b*1.3 : b; }
+function textColor() { return (TEXT_COLORS.find(x => x.id === settings.textColor) || {}).value || '#fff'; }
+function outlineColor() { return settings.textColor === 'black' ? '#fff' : '#000'; }
+
+function drawText(ctx, text, x, y, maxW, size, isTop) {
   if (!text.trim()) return;
-  ctx.font = `bold ${fontSize}px ${getFont()}`;
+  ctx.font = `bold ${size}px ${font()}`;
   ctx.textAlign = 'center';
   ctx.textBaseline = isTop ? 'top' : 'bottom';
   const words = text.split(' ');
-  const lines = [];
-  let line = '';
+  const lines = []; let line = '';
   words.forEach(w => {
-    const test = line ? line + ' ' + w : w;
-    if (ctx.measureText(test).width > maxWidth && line) {
-      lines.push(line); line = w;
-    } else { line = test; }
+    const t = line ? line + ' ' + w : w;
+    if (ctx.measureText(t).width > maxW && line) { lines.push(line); line = w; }
+    else line = t;
   });
   if (line) lines.push(line);
-  const lineHeight = fontSize * 1.1;
-  const startY = isTop ? y : y - (lines.length - 1) * lineHeight;
+  const lh = size * 1.1;
+  const sy = isTop ? y : y - (lines.length - 1) * lh;
   lines.forEach((l, i) => {
-    const cy = startY + i * lineHeight;
+    const cy = sy + i * lh;
     if (settings.outline) {
-      ctx.strokeStyle = getOutlineColor();
-      ctx.lineWidth = Math.max(3, fontSize * 0.12);
+      ctx.strokeStyle = outlineColor();
+      ctx.lineWidth = Math.max(3, size * .12);
       ctx.lineJoin = 'round';
       ctx.strokeText(l, x, cy);
     }
-    ctx.fillStyle = getTextColor();
+    ctx.fillStyle = textColor();
     ctx.fillText(l, x, cy);
   });
 }
 
-/* ============ ЗАГРУЗКА ФОТО ============ */
+/* ============ ФОТО ============ */
 const uploadZone = document.getElementById('uploadZone');
 const photoInput = document.getElementById('photoInput');
 const photoPreview = document.getElementById('photoPreview');
@@ -785,8 +949,7 @@ const photoImgEl = document.getElementById('photoImg');
 
 uploadZone.onclick = () => photoInput.click();
 photoInput.onchange = (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+  const file = e.target.files?.[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = (ev) => {
     const img = new Image();
@@ -803,17 +966,16 @@ photoInput.onchange = (e) => {
 };
 document.getElementById('removePhoto').onclick = (e) => {
   e.stopPropagation();
-  userPhoto = null;
-  photoInput.value = '';
+  userPhoto = null; photoInput.value = '';
   photoPreview.style.display = 'none';
   uploadZone.style.display = 'block';
 };
 
-/* ============ ПЕРЕКЛЮЧАТЕЛЬ ============ */
-document.querySelectorAll('#sourceTabs .cat-btn').forEach(btn => {
+/* ============ ИСТОЧНИК ============ */
+document.querySelectorAll('#sourceTabs .chip').forEach(btn => {
   btn.onclick = () => {
     selectedSource = btn.dataset.source;
-    document.querySelectorAll('#sourceTabs .cat-btn').forEach(b => b.classList.toggle('active', b === btn));
+    document.querySelectorAll('#sourceTabs .chip').forEach(b => b.classList.toggle('active', b === btn));
     document.getElementById('photoSource').style.display = selectedSource === 'photo' ? 'block' : 'none';
     document.getElementById('templateSource').style.display = selectedSource === 'template' ? 'block' : 'none';
     if (tg) tg.HapticFeedback?.selectionChanged();
@@ -824,32 +986,31 @@ document.querySelectorAll('#sourceTabs .cat-btn').forEach(btn => {
 const generateBtn = document.getElementById('generateBtn');
 const memeContainer = document.getElementById('memeContainer');
 
-async function loadImageRobust(originalUrl) {
-  const stripped = originalUrl.replace(/^https?:\/\//, '');
-  const attempts = [
-    originalUrl,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(originalUrl)}`,
-    `https://corsproxy.io/?url=${encodeURIComponent(originalUrl)}`,
-    `https://images.weserv.nl/?url=${encodeURIComponent(stripped)}&w=800&output=jpg`
+async function loadImageRobust(url) {
+  const st = url.replace(/^https?:\/\//, '');
+  const tries = [
+    url,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+    `https://images.weserv.nl/?url=${encodeURIComponent(st)}&w=800&output=jpg`
   ];
-
-  for (const url of attempts) {
+  for (const u of tries) {
     try {
       const img = new Image();
       img.crossOrigin = 'anonymous';
       await new Promise((res, rej) => {
-        const t = setTimeout(() => rej(new Error('timeout')), 6000);
+        const t = setTimeout(() => rej(new Error('to')), 6000);
         img.onload = () => { clearTimeout(t); res(); };
-        img.onerror = () => { clearTimeout(t); rej(new Error('load fail')); };
-        img.src = url;
+        img.onerror = () => { clearTimeout(t); rej(new Error('err')); };
+        img.src = u;
       });
       if (img.width > 0) return img;
-    } catch (e) { /* next */ }
+    } catch(e) {}
   }
   throw new Error('Не удалось загрузить');
 }
 
-async function generateMeme() {
+async function generate() {
   const top = document.getElementById('topText').value;
   const bottom = document.getElementById('bottomText').value;
 
@@ -857,41 +1018,38 @@ async function generateMeme() {
   if (selectedSource === 'photo' && !userPhoto) { showToast('Сначала загрузи фото'); return; }
 
   generateBtn.disabled = true;
-  memeContainer.innerHTML = '<div class="loader-wrap"><div class="loader"></div></div>';
+  memeContainer.innerHTML = '<div class="loader-wrap"><div class="spinner"></div></div>';
 
   try {
-    let sourceImg;
-    if (selectedSource === 'photo' && userPhoto) {
-      sourceImg = userPhoto.img;
-    } else {
+    let src;
+    if (selectedSource === 'photo' && userPhoto) src = userPhoto.img;
+    else {
       const t = TEMPLATES.find(x => x.id === selectedTemplate);
-      if (!t) throw new Error('Шаблон не найден');
-      sourceImg = await loadImageRobust(t.url);
+      if (!t) throw new Error('Не найдено');
+      src = await loadImageRobust(t.url);
     }
 
     const canvas = document.createElement('canvas');
     const maxW = 1000;
-    let w = sourceImg.width, h = sourceImg.height;
+    let w = src.width, h = src.height;
     if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
     canvas.width = w; canvas.height = h;
     const ctx = canvas.getContext('2d');
-    ctx.drawImage(sourceImg, 0, 0, w, h);
+    ctx.drawImage(src, 0, 0, w, h);
 
     if (settings.gradient) {
-      const g1 = ctx.createLinearGradient(0, 0, 0, h * 0.35);
-      g1.addColorStop(0, 'rgba(0,0,0,0.55)');
-      g1.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = g1; ctx.fillRect(0, 0, w, h * 0.35);
-      const g2 = ctx.createLinearGradient(0, h, 0, h * 0.65);
-      g2.addColorStop(0, 'rgba(0,0,0,0.55)');
-      g2.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = g2; ctx.fillRect(0, h * 0.65, w, h * 0.35);
+      const g1 = ctx.createLinearGradient(0, 0, 0, h * .35);
+      g1.addColorStop(0, 'rgba(0,0,0,.55)'); g1.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g1; ctx.fillRect(0, 0, w, h * .35);
+      const g2 = ctx.createLinearGradient(0, h, 0, h * .65);
+      g2.addColorStop(0, 'rgba(0,0,0,.55)'); g2.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g2; ctx.fillRect(0, h * .65, w, h * .35);
     }
 
-    const fontSize = getSize(w * 0.09);
-    const padding = w * 0.05;
-    if (top.trim()) drawText(ctx, top, w/2, padding, w - padding*2, fontSize, true);
-    if (bottom.trim()) drawText(ctx, bottom, w/2, h - padding, w - padding*2, fontSize, false);
+    const fz = sz(w * .09);
+    const pad = w * .05;
+    if (top.trim()) drawText(ctx, top, w/2, pad, w - pad*2, fz, true);
+    if (bottom.trim()) drawText(ctx, bottom, w/2, h - pad, w - pad*2, fz, false);
 
     const dataUrl = canvas.toDataURL('image/png');
 
@@ -900,13 +1058,19 @@ async function generateMeme() {
     imgEl.src = dataUrl; imgEl.className = 'meme-img';
     memeContainer.appendChild(imgEl);
 
-    const actions = document.createElement('div');
-    actions.className = 'meme-actions';
-    actions.innerHTML = `
-      <button class="action-btn primary" id="shareBtn">📤 Поделиться</button>
-      <button class="action-btn" id="downloadBtn">⬇️ Скачать</button>
+    const acts = document.createElement('div');
+    acts.className = 'result-actions';
+    acts.innerHTML = `
+      <button class="btn-ghost primary" id="shareBtn">
+        <svg viewBox="0 0 24 24" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Отправить
+      </button>
+      <button class="btn-ghost" id="downloadBtn">
+        <svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Скачать
+      </button>
     `;
-    memeContainer.appendChild(actions);
+    memeContainer.appendChild(acts);
     document.getElementById('shareBtn').onclick = () => shareMeme(dataUrl);
     document.getElementById('downloadBtn').onclick = () => downloadMeme(dataUrl);
 
@@ -920,47 +1084,74 @@ async function generateMeme() {
     }
     generateBtn.disabled = false;
     if (tg) tg.HapticFeedback?.notificationOccurred('success');
-    confettiBurst();
-
-  } catch (e) {
-    console.error(e);
-    memeContainer.innerHTML = `<div class="empty"><span class="empty-icon">😢</span>Не получилось загрузить шаблон.<br><br>Попробуй другой или переключись на «📸 Своё фото» — работает без интернета.</div>`;
+    confetti();
+  } catch(e) {
+    memeContainer.innerHTML = `<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="empty-title">Не получилось загрузить</div><div class="empty-text">Попробуй другой шаблон или переключись на «📸 Своё фото»</div></div>`;
     generateBtn.disabled = false;
   }
 }
 generateBtn.onclick = () => {
   if (tg) tg.HapticFeedback?.impactOccurred('medium');
-  generateMeme();
+  generate();
 };
 
-/* ============ ПОДЕЛИТЬСЯ / СКАЧАТЬ ============ */
-function shareMeme(url) {
+/* ============ ПОДЕЛИТЬСЯ (ИСПРАВЛЕНО!) ============ */
+async function shareMeme(dataUrl) {
   if (tg) tg.HapticFeedback?.impactOccurred('light');
-  const text = 'Смотри, какой мем я сделал! 😂';
-  const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
-  try { if (tg) tg.openTelegramLink(shareUrl); else window.open(shareUrl, '_blank'); }
-  catch(e) { window.open(shareUrl, '_blank'); }
+  try {
+    // Конвертируем dataUrl в Blob -> File
+    const blob = await (await fetch(dataUrl)).blob();
+    const file = new File([blob], `meme_${Date.now()}.png`, { type: 'image/png' });
+
+    // Web Share API — открывает нативное меню iOS, где есть Telegram
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: 'Мой мем',
+        text: 'Смотри, какой мем! 😂'
+      });
+      return;
+    }
+
+    // Fallback: сохраняем и подсказываем
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `meme_${Date.now()}.png`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    showToast('Мем сохранён — отправь в ТГ из галереи');
+  } catch(e) {
+    if (e.name === 'AbortError') return; // пользователь отменил — не ошибка
+    console.error(e);
+    showToast('Не удалось поделиться');
+  }
 }
+
 async function downloadMeme(url) {
   if (tg) tg.HapticFeedback?.impactOccurred('light');
   showToast('Скачиваю...');
   try {
+    const blob = await (await fetch(url)).blob();
+    const u = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `meme_${Date.now()}.png`;
+    a.href = u; a.download = `meme_${Date.now()}.png`;
     document.body.appendChild(a); a.click(); a.remove();
-    showToast('Сохранено!');
-  } catch(e) { window.open(url, '_blank'); }
+    setTimeout(() => URL.revokeObjectURL(u), 2000);
+    showToast('Сохранено в галерею!');
+  } catch(e) {
+    window.open(url, '_blank');
+  }
 }
 
 /* ============ НАВИГАЦИЯ ============ */
 document.querySelectorAll('.nav-btn').forEach(btn => {
   btn.onclick = () => {
-    const tab = btn.dataset.tab;
+    const t = btn.dataset.tab;
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b === btn));
-    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.id === 'tab-' + tab));
+    document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x.id === 'tab-' + t));
     if (tg) tg.HapticFeedback?.selectionChanged();
-    if (tab === 'history') renderHistory();
-    if (tab === 'settings') updateCounters();
+    if (t === 'history') renderHistory();
+    if (t === 'settings') updateCounters();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 });
@@ -970,15 +1161,15 @@ function renderHistory() {
   const el = document.getElementById('historyContainer');
   const h = store.history;
   if (!h.length) {
-    el.innerHTML = '<div class="empty"><span class="empty-icon">📭</span>Пока пусто. Сгенерируй первый мем!</div>';
+    el.innerHTML = '<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="empty-title">Пока пусто</div><div class="empty-text">Сгенерируй первый мем!</div></div>';
     return;
   }
   el.innerHTML = '';
   const grid = document.createElement('div');
-  grid.className = 'history-grid';
-  h.forEach((item) => {
+  grid.className = 'hist-grid';
+  h.forEach(item => {
     const d = document.createElement('div');
-    d.className = 'history-item';
+    d.className = 'hist-item';
     d.innerHTML = `<img src="${item.url}" alt="" loading="lazy">`;
     d.onclick = () => openModal(item.url);
     grid.appendChild(d);
@@ -996,7 +1187,7 @@ document.getElementById('clearHistoryBtn').onclick = () => {
 /* ============ МОДАЛКА ============ */
 const modal = document.getElementById('modal');
 const modalImg = document.getElementById('modalImg');
-function openModal(url) { modalImg.src = url; modal.classList.add('show'); }
+function openModal(u) { modalImg.src = u; modal.classList.add('show'); }
 document.getElementById('closeModal').onclick = () => modal.classList.remove('show');
 modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('show'); };
 document.getElementById('modalShare').onclick = () => shareMeme(modalImg.src);
@@ -1019,11 +1210,11 @@ document.querySelectorAll('#sizeSegment button').forEach(b => {
   };
 });
 document.getElementById('outlineToggle').checked = settings.outline;
-document.getElementById('outlineToggle').onchange = (e) => { settings.outline = e.target.checked; saveSettings(); };
+document.getElementById('outlineToggle').onchange = e => { settings.outline = e.target.checked; saveSettings(); };
 document.getElementById('gradientToggle').checked = settings.gradient;
-document.getElementById('gradientToggle').onchange = (e) => { settings.gradient = e.target.checked; saveSettings(); };
+document.getElementById('gradientToggle').onchange = e => { settings.gradient = e.target.checked; saveSettings(); };
 document.getElementById('autosaveToggle').checked = settings.autosave;
-document.getElementById('autosaveToggle').onchange = (e) => { settings.autosave = e.target.checked; saveSettings(); };
+document.getElementById('autosaveToggle').onchange = e => { settings.autosave = e.target.checked; saveSettings(); };
 document.getElementById('resetAllBtn').onclick = () => {
   if (confirm('Точно сбросить всё?')) { localStorage.clear(); location.reload(); }
 };
@@ -1032,8 +1223,7 @@ document.getElementById('randomBtn').onclick = () => {
   const t = list[Math.floor(Math.random() * list.length)];
   selectedTemplate = t.id;
   settings.defaultTemplate = t.id;
-  saveSettings();
-  renderTemplates();
+  saveSettings(); renderTemplates();
   if (tg) tg.HapticFeedback?.impactOccurred('medium');
   showToast(`Шаблон: ${t.name}`);
 };
@@ -1042,24 +1232,24 @@ document.getElementById('rerollPhrases').onclick = () => {
   if (tg) tg.HapticFeedback?.impactOccurred('light');
 };
 
-/* ============ ОЧИСТКА ИНПУТОВ ============ */
-document.querySelectorAll('.clear-input').forEach(b => {
+/* ============ ОЧИСТКА ============ */
+document.querySelectorAll('.in-x').forEach(b => {
   b.onclick = () => {
     document.getElementById(b.dataset.target).value = '';
     b.style.display = 'none';
   };
 });
-['topText', 'bottomText'].forEach(id => {
-  const input = document.getElementById(id);
-  input.addEventListener('input', updateClearButtons);
+['topText','bottomText'].forEach(id => {
+  const i = document.getElementById(id);
+  i.addEventListener('input', updateX);
 });
-updateClearButtons();
+updateX();
 
 /* ============ СТАРТ ============ */
 applyTheme();
 renderCategories();
 renderTemplates();
-renderEmojiRows();
+renderEmoji();
 renderColors();
 renderPhrases();
 updateCounters();
