@@ -1,43 +1,363 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Генератор Мемов</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f0f0f0; }
-        button { padding: 15px 30px; font-size: 18px; cursor: pointer; border-radius: 10px; border: none; background-color: #2481cc; color: white; margin-top: 20px; }
-        #meme-image { max-width: 100%; height: auto; margin-top: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Мем-Генератор</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: var(--tg-theme-bg-color, #17212b);
+    --secondary-bg: var(--tg-theme-secondary-bg-color, #232e3c);
+    --text: var(--tg-theme-text-color, #ffffff);
+    --hint: var(--tg-theme-hint-color, #708499);
+    --link: var(--tg-theme-link-color, #6ab3f3);
+    --button: var(--tg-theme-button-color, #5288c1);
+    --button-text: var(--tg-theme-button-text-color, #ffffff);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    padding: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    font-size: 24px;
+    margin: 0 0 8px 0;
+    font-weight: 700;
+    background: linear-gradient(135deg, #6ab3f3, #a06af3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 13px;
+    color: var(--hint);
+  }
+  .stats b { color: var(--text); font-size: 15px; }
+  
+  .section-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    color: var(--hint);
+    margin: 16px 0 8px 0;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  
+  .templates {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .template-btn {
+    background: var(--secondary-bg);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    padding: 8px 4px;
+    color: var(--text);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    font-family: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .template-btn:active { transform: scale(0.95); }
+  .template-btn.active {
+    border-color: var(--button);
+    background: rgba(82, 136, 193, 0.2);
+  }
+  .template-emoji { font-size: 22px; }
+  
+  .input-group {
+    margin-bottom: 10px;
+  }
+  input[type="text"] {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--secondary-bg);
+    background: var(--secondary-bg);
+    color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus {
+    border-color: var(--button);
+  }
+  input::placeholder { color: var(--hint); }
+  
+  .generate-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #5288c1, #6a5ac1);
+    color: white;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 8px;
+    transition: transform 0.1s, opacity 0.2s;
+    box-shadow: 0 4px 12px rgba(82, 136, 193, 0.3);
+  }
+  .generate-btn:active { transform: scale(0.97); }
+  .generate-btn:disabled { opacity: 0.6; cursor: wait; }
+  
+  .meme-container {
+    margin-top: 20px;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .meme-img {
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .share-btn {
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: none;
+    background: var(--button);
+    color: var(--button-text);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    width: 100%;
+    max-width: 300px;
+  }
+  .share-btn:active { transform: scale(0.97); }
+  
+  .loader {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 3px solid var(--secondary-bg);
+    border-top-color: var(--button);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--hint);
+    font-size: 14px;
+  }
+  .empty-icon { font-size: 48px; display: block; margin-bottom: 12px; opacity: 0.5; }
+  
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--secondary-bg);
+    color: var(--text);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: transform 0.3s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 1000;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
 </head>
 <body>
-    <h1>Генератор Мемов</h1>
-    <p>Нажми кнопку, чтобы получить случайный мем!</p>
-    <button id="generate-btn">Сгенерировать мем</button>
-    <div id="meme-container"></div>
 
-    <script>
-        const generateBtn = document.getElementById('generate-btn');
-        const memeContainer = document.getElementById('meme-container');
-        const tg = window.Telegram.WebApp;
+<div class="header">
+  <h1>😎 Мем-Генератор</h1>
+  <div class="stats">
+    <span>Создано мемов: <b id="counter">0</b></span>
+  </div>
+</div>
 
-        generateBtn.addEventListener('click', () => {
-            // Простой способ: используем сервис для генерации случайных мемов
-            // В реальном приложении лучше использовать API с шаблонами
-            const randomId = Math.floor(Math.random() * 1000);
-            const memeUrl = `https://api.memegen.link/images/buzz/${randomId}.png`;
-            
-            memeContainer.innerHTML = `<img id="meme-image" src="${memeUrl}" alt="Случайный мем">`;
-            
-            // Даем Telegram знать, что приложение готово
-            tg.ready();
-        });
+<div class="section-title">Выбери шаблон</div>
+<div class="templates" id="templates"></div>
 
-        // Сообщаем Telegram, что приложение загружено
-        tg.ready();
-        tg.expand(); // Разворачиваем на весь экран
-    </script>
+<div class="section-title">Текст мема</div>
+<div class="input-group">
+  <input type="text" id="topText" placeholder="Верхний текст..." maxlength="50">
+</div>
+<div class="input-group">
+  <input type="text" id="bottomText" placeholder="Нижний текст..." maxlength="50">
+</div>
+
+<button class="generate-btn" id="generateBtn">🎨 Сгенерировать мем</button>
+
+<div class="meme-container" id="memeContainer">
+  <div class="empty">
+    <span class="empty-icon">🖼️</span>
+    Здесь появится твой мем
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const tg = window.Telegram?.WebApp;
+if (tg) { tg.ready(); tg.expand(); }
+
+const templates = [
+  { id: 'drake', name: 'Дрейк', emoji: '🤷‍♂️' },
+  { id: 'buzz', name: 'Базз', emoji: '🚀' },
+  { id: 'doge', name: 'Doge', emoji: '🐕' },
+  { id: 'success', name: 'Успех', emoji: '👶' },
+  { id: 'facepalm', name: 'Фейспалм', emoji: '🤦' },
+  { id: 'fry', name: 'Фрай', emoji: '🤔' },
+  { id: 'gru', name: 'Гру', emoji: '👨‍🦲' },
+  { id: 'panik', name: 'Паника', emoji: '😱' },
+  { id: 'philosoraptor', name: 'Философ', emoji: '🦖' },
+  { id: 'sadfrog', name: 'Грустно', emoji: '🐸' },
+  { id: 'spongebob', name: 'Спанч', emoji: '🧽' },
+  { id: 'squidward', name: 'Сквид', emoji: '🐙' },
+  { id: 'think', name: 'Думает', emoji: '🤨' },
+  { id: 'woman-cat', name: 'Кошка', emoji: '🐱' },
+  { id: 'yuno', name: 'Y U NO', emoji: '😤' },
+  { id: 'regret', name: 'Сожаление', emoji: '😬' },
+  { id: 'oprah', name: 'Опра', emoji: '🎁' },
+  { id: 'money', name: 'Деньги', emoji: '💰' },
+  { id: 'ancient', name: 'Древний', emoji: '👽' },
+  { id: 'disastergirl', name: 'Пожар', emoji: '🔥' },
+  { id: 'hide', name: 'Прячется', emoji: '🙈' },
+  { id: 'cryingfloor', name: 'Плачет', emoji: '😭' },
+  { id: 'distracted', name: 'Отвлёкся', emoji: '👀' },
+  { id: 'rollsafe', name: 'Smart', emoji: '🧠' }
+];
+
+let selectedTemplate = 'drake';
+let currentMemeUrl = '';
+
+// --- Счётчик ---
+function getCount() {
+  return parseInt(localStorage.getItem('memeCount') || '0', 10);
+}
+function setCount(n) {
+  localStorage.setItem('memeCount', n);
+  document.getElementById('counter').textContent = n.toLocaleString('ru-RU');
+}
+setCount(getCount());
+
+// --- Рендер шаблонов ---
+const templatesEl = document.getElementById('templates');
+templates.forEach(t => {
+  const btn = document.createElement('button');
+  btn.className = 'template-btn' + (t.id === selectedTemplate ? ' active' : '');
+  btn.dataset.id = t.id;
+  btn.innerHTML = `<span class="template-emoji">${t.emoji}</span><span>${t.name}</span>`;
+  btn.onclick = () => {
+    selectedTemplate = t.id;
+    document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (tg) tg.HapticFeedback?.selectionChanged();
+  };
+  templatesEl.appendChild(btn);
+});
+
+// --- Утилиты ---
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function encodeText(text) {
+  if (!text || !text.trim()) return '_';
+  return encodeURIComponent(text.trim()).replace(/-/g, '--').replace(/_/g, '__').replace(/%20/g, '_');
+}
+
+// --- Генерация ---
+const generateBtn = document.getElementById('generateBtn');
+const memeContainer = document.getElementById('memeContainer');
+
+generateBtn.onclick = () => {
+  if (tg) tg.HapticFeedback?.impactOccurred('medium');
+  
+  const top = document.getElementById('topText').value;
+  const bottom = document.getElementById('bottomText').value;
+  
+  generateBtn.disabled = true;
+  memeContainer.innerHTML = '<div class="loader"></div>';
+  
+  const topEncoded = encodeText(top);
+  const bottomEncoded = encodeText(bottom);
+  const url = `https://api.memegen.link/images/${selectedTemplate}/${topEncoded}/${bottomEncoded}.png?width=800`;
+  
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    currentMemeUrl = url;
+    memeContainer.innerHTML = '';
+    
+    const imgEl = document.createElement('img');
+    imgEl.src = url;
+    imgEl.className = 'meme-img';
+    memeContainer.appendChild(imgEl);
+    
+    const shareBtn = document.createElement('button');
+    shareBtn.className = 'share-btn';
+    shareBtn.textContent = '📤 Поделиться мемом';
+    shareBtn.onclick = shareMeme;
+    memeContainer.appendChild(shareBtn);
+    
+    // Увеличиваем счётчик
+    setCount(getCount() + 1);
+    
+    generateBtn.disabled = false;
+    if (tg) tg.HapticFeedback?.notificationOccurred('success');
+  };
+  img.onerror = () => {
+    memeContainer.innerHTML = '<div class="empty"><span class="empty-icon">😢</span>Не удалось сгенерировать. Попробуй другой текст.</div>';
+    generateBtn.disabled = false;
+    showToast('Ошибка генерации');
+  };
+  img.src = url;
+};
+
+// --- Поделиться ---
+function shareMeme() {
+  if (!currentMemeUrl) return;
+  if (tg) tg.HapticFeedback?.impactOccurred('light');
+  
+  const shareText = 'Смотри, какой мем я сделал! 😂';
+  const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(currentMemeUrl)}&text=${encodeURIComponent(shareText)}`;
+  
+  if (tg) {
+    tg.openTelegramLink(shareUrl);
+  } else {
+    window.open(shareUrl, '_blank');
+  }
+}
+</script>
 </body>
 </html>
