@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -7,15 +8,25 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root {
-    --bg: #0f1420; --card: rgba(35, 46, 60, 0.7); --card-solid: #232e3c;
-    --border: rgba(255,255,255,0.08); --text: #ffffff; --hint: #708499;
-    --accent: #6ab3f3; --accent2: #a06af3;
-    --button: linear-gradient(135deg, #5288c1, #6a5ac1);
-    --danger: #e85d5d;
+    --bg: #0a0e18;
+    --card: rgba(30, 41, 59, 0.6);
+    --card-solid: #1e293b;
+    --border: rgba(255,255,255,0.08);
+    --text: #f1f5f9;
+    --hint: #64748b;
+    --accent: #60a5fa;
+    --accent2: #a78bfa;
+    --button: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    --success: #10b981;
+    --danger: #ef4444;
   }
   body.light {
-    --bg: #f0f2f5; --card: rgba(255,255,255,0.85); --card-solid: #ffffff;
-    --border: rgba(0,0,0,0.08); --text: #17212b; --hint: #8a93a0;
+    --bg: #f8fafc;
+    --card: rgba(255,255,255,0.85);
+    --card-solid: #ffffff;
+    --border: rgba(0,0,0,0.07);
+    --text: #0f172a;
+    --hint: #94a3b8;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
@@ -25,90 +36,88 @@
     transition: background 0.3s, color 0.3s;
   }
   .bg-blobs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-  .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.35; animation: float 20s infinite ease-in-out; }
-  .blob.b1 { width: 260px; height: 260px; background: #5288c1; top: -80px; left: -80px; }
-  .blob.b2 { width: 300px; height: 300px; background: #a06af3; bottom: -100px; right: -100px; animation-delay: -7s; }
-  .blob.b3 { width: 220px; height: 220px; background: #22c55e; top: 40%; left: 60%; animation-delay: -14s; opacity: 0.2; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; animation: float 22s infinite ease-in-out; }
+  .blob.b1 { width: 300px; height: 300px; background: #3b82f6; top: -100px; left: -100px; }
+  .blob.b2 { width: 340px; height: 340px; background: #8b5cf6; bottom: -120px; right: -120px; animation-delay: -8s; }
+  .blob.b3 { width: 240px; height: 240px; background: #06b6d4; top: 45%; left: 55%; animation-delay: -15s; opacity: 0.25; }
   @keyframes float {
     0%,100% { transform: translate(0,0) scale(1); }
-    33% { transform: translate(40px,-30px) scale(1.1); }
-    66% { transform: translate(-30px,40px) scale(0.95); }
+    50% { transform: translate(30px,-25px) scale(1.08); }
   }
-  .app-header { padding: calc(env(safe-area-inset-top, 0px) + 18px) 20px 12px; text-align: center; }
+  .app-header { padding: calc(env(safe-area-inset-top, 0px) + 20px) 20px 14px; text-align: center; }
   .app-header h1 {
-    font-size: 26px; margin: 0 0 6px 0; font-weight: 800;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    font-size: 27px; margin: 0 0 6px 0; font-weight: 800; letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa, #22d3ee);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
-  .app-header .sub { font-size: 12px; color: var(--hint); letter-spacing: 0.5px; text-transform: uppercase; }
-  .main { padding: 0 16px 100px; max-width: 560px; margin: 0 auto; }
+  .app-header .sub { font-size: 11px; color: var(--hint); letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
+  .main { padding: 0 16px 110px; max-width: 560px; margin: 0 auto; }
   .tab { display: none; animation: fadeIn 0.25s ease; }
   .tab.active { display: block; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
   .card {
-    background: var(--card); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin-bottom: 12px;
+    background: var(--card); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--border); border-radius: 18px; padding: 14px; margin-bottom: 12px;
   }
   .section-title {
-    font-size: 12px; text-transform: uppercase; color: var(--hint);
-    margin: 18px 4px 8px; letter-spacing: 1px; font-weight: 700;
+    font-size: 11px; text-transform: uppercase; color: var(--hint);
+    margin: 20px 4px 8px; letter-spacing: 1.2px; font-weight: 700;
     display: flex; justify-content: space-between; align-items: center;
   }
   .section-title .link {
-    font-size: 12px; color: var(--accent); text-transform: none; letter-spacing: 0;
-    cursor: pointer; background: none; border: none; padding: 4px 8px; font-family: inherit; font-weight: 600;
+    font-size: 11px; color: var(--accent); text-transform: none; letter-spacing: 0;
+    cursor: pointer; background: none; border: none; padding: 4px 8px; font-family: inherit; font-weight: 700;
   }
   .categories { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 8px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
   .categories::-webkit-scrollbar { display: none; }
   .cat-btn {
-    flex: 0 0 auto; padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border);
+    flex: 0 0 auto; padding: 9px 15px; border-radius: 22px; border: 1px solid var(--border);
     background: var(--card); color: var(--text); font-size: 13px; font-family: inherit;
-    font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    backdrop-filter: blur(10px);
   }
-  .cat-btn.active { background: var(--button); border-color: transparent; color: #fff; box-shadow: 0 4px 12px rgba(82,136,193,0.35); }
+  .cat-btn.active { background: var(--button); border-color: transparent; color: #fff; box-shadow: 0 6px 16px rgba(99,102,241,0.35); }
   .cat-btn:active { transform: scale(0.95); }
   .upload-zone {
-    border: 2px dashed var(--border); border-radius: 16px; padding: 30px 20px; text-align: center;
+    border: 2px dashed var(--border); border-radius: 18px; padding: 32px 20px; text-align: center;
     cursor: pointer; transition: all 0.2s; background: var(--card);
   }
   .upload-zone:active { transform: scale(0.98); border-color: var(--accent); }
-  .upload-zone .icon { font-size: 48px; display: block; margin-bottom: 10px; }
-  .upload-zone .title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .upload-zone .icon { font-size: 52px; display: block; margin-bottom: 10px; }
+  .upload-zone .title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
   .upload-zone .desc { font-size: 13px; color: var(--hint); }
-  .photo-preview {
-    position: relative; border-radius: 12px; overflow: hidden; margin-bottom: 10px;
-    border: 1px solid var(--border);
-  }
+  .photo-preview { position: relative; border-radius: 14px; overflow: hidden; margin-bottom: 10px; border: 1px solid var(--border); }
   .photo-preview img { width: 100%; display: block; max-height: 260px; object-fit: contain; background: #000; }
-  .photo-preview .remove-photo {
-    position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border-radius: 50%;
-    background: rgba(0,0,0,0.6); border: none; color: #fff; font-size: 16px; cursor: pointer;
+  .remove-photo {
+    position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(0,0,0,0.65); border: none; color: #fff; font-size: 16px; cursor: pointer;
     backdrop-filter: blur(10px);
   }
-  .templates { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 8px; }
+  .templates { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; }
   .template-btn {
     background: var(--card); border: 2px solid transparent; border-radius: 12px;
     padding: 4px; color: var(--text); font-size: 10px; cursor: pointer;
     transition: all 0.15s; text-align: center; font-family: inherit;
-    display: flex; flex-direction: column; align-items: center; gap: 3px; font-weight: 500;
+    display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 600;
     overflow: hidden;
   }
   .template-btn:active { transform: scale(0.92); }
-  .template-btn.active { border-color: var(--accent); background: rgba(106, 179, 243, 0.15); }
+  .template-btn.active { border-color: var(--accent); background: rgba(96, 165, 250, 0.15); }
   .template-thumb {
     width: 100%; aspect-ratio: 1; border-radius: 8px; overflow: hidden;
     background: var(--card-solid); display: flex; align-items: center; justify-content: center;
+    color: var(--hint); font-size: 24px;
   }
   .template-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .template-name { font-size: 9px; line-height: 1.1; }
   .input-group { margin-bottom: 10px; position: relative; }
   input[type="text"] {
-    width: 100%; padding: 13px 44px 13px 14px; border-radius: 12px;
+    width: 100%; padding: 13px 44px 13px 14px; border-radius: 13px;
     border: 1px solid var(--border); background: var(--card-solid); color: var(--text);
     font-size: 15px; font-family: inherit; outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
   }
-  input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(106, 179, 243, 0.15); }
+  input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.18); }
   input::placeholder { color: var(--hint); }
   .clear-input {
     position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
@@ -119,29 +128,45 @@
   .emoji-row { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 4px; margin-bottom: 10px; scrollbar-width: none; }
   .emoji-row::-webkit-scrollbar { display: none; }
   .emoji-btn {
-    flex: 0 0 auto; width: 36px; height: 36px; border-radius: 10px;
+    flex: 0 0 auto; width: 38px; height: 38px; border-radius: 11px;
     border: 1px solid var(--border); background: var(--card-solid);
-    font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 19px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: transform 0.1s;
   }
   .emoji-btn:active { transform: scale(0.85); }
+  .phrase-btn {
+    display: block; width: 100%; text-align: left; padding: 11px 14px; margin-bottom: 6px;
+    border-radius: 11px; border: 1px solid var(--border); background: var(--card-solid);
+    color: var(--text); font-size: 13px; font-family: inherit; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .phrase-btn:active { transform: scale(0.98); background: rgba(96, 165, 250, 0.15); }
+  .color-row { display: flex; gap: 8px; padding: 4px 0; }
+  .color-dot {
+    width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+    border: 3px solid transparent; transition: all 0.15s;
+  }
+  .color-dot.active { border-color: var(--accent); transform: scale(1.1); }
+  .color-dot:active { transform: scale(0.9); }
   .generate-btn {
-    width: 100%; padding: 16px; border-radius: 14px; border: none;
+    width: 100%; padding: 17px; border-radius: 16px; border: none;
     background: var(--button); color: #fff; font-size: 17px; font-weight: 700;
     cursor: pointer; font-family: inherit; margin-top: 6px;
     transition: transform 0.1s, box-shadow 0.2s;
-    box-shadow: 0 6px 18px rgba(82, 136, 193, 0.4);
+    box-shadow: 0 8px 22px rgba(99, 102, 241, 0.45);
+    letter-spacing: 0.3px;
   }
   .generate-btn:active { transform: scale(0.97); }
   .generate-btn:disabled { opacity: 0.6; }
   .meme-container { margin-top: 16px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
   .meme-img {
-    max-width: 100%; border-radius: 14px; box-shadow: 0 12px 32px rgba(0,0,0,0.4);
-    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-width: 100%; border-radius: 16px; box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+    animation: popIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
   .meme-actions { display: flex; gap: 8px; width: 100%; }
   .action-btn {
-    flex: 1; padding: 13px; border-radius: 12px; border: 1px solid var(--border);
+    flex: 1; padding: 14px; border-radius: 13px; border: 1px solid var(--border);
     background: var(--card); color: var(--text); font-size: 14px; font-weight: 600;
     cursor: pointer; font-family: inherit; display: flex; align-items: center;
     justify-content: center; gap: 6px; transition: transform 0.1s;
@@ -150,13 +175,13 @@
   .action-btn:active { transform: scale(0.95); }
   .loader-wrap { padding: 40px 0; text-align: center; }
   .loader {
-    display: inline-block; width: 40px; height: 40px;
+    display: inline-block; width: 44px; height: 44px;
     border: 3px solid var(--border); border-top-color: var(--accent);
     border-radius: 50%; animation: spin 0.8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .empty { text-align: center; padding: 40px 20px; color: var(--hint); font-size: 14px; }
-  .empty-icon { font-size: 56px; display: block; margin-bottom: 14px; opacity: 0.5; }
+  .empty { text-align: center; padding: 40px 20px; color: var(--hint); font-size: 14px; line-height: 1.6; }
+  .empty-icon { font-size: 56px; display: block; margin-bottom: 14px; opacity: 0.6; }
   .history-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .history-item {
     border-radius: 12px; overflow: hidden; background: var(--card); border: 1px solid var(--border);
@@ -184,62 +209,60 @@
   }
   .switch input:checked + .switch-slider { background: var(--accent); border-color: transparent; }
   .switch input:checked + .switch-slider::before { transform: translateX(20px); }
-  .segment { display: flex; background: var(--card-solid); border-radius: 10px; padding: 3px; border: 1px solid var(--border); }
+  .segment { display: flex; background: var(--card-solid); border-radius: 11px; padding: 3px; border: 1px solid var(--border); }
   .segment button {
-    padding: 6px 12px; border-radius: 8px; border: none; background: transparent;
-    color: var(--text); font-size: 13px; font-family: inherit; cursor: pointer; font-weight: 500;
+    padding: 7px 12px; border-radius: 9px; border: none; background: transparent;
+    color: var(--text); font-size: 13px; font-family: inherit; cursor: pointer; font-weight: 600;
   }
   .segment button.active { background: var(--accent); color: #fff; }
   .danger-btn {
     width: 100%; padding: 14px; border-radius: 12px;
-    border: 1px solid rgba(232, 93, 93, 0.3); background: rgba(232, 93, 93, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.1);
     color: var(--danger); font-size: 15px; font-weight: 600; cursor: pointer;
     font-family: inherit; margin-top: 8px;
   }
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0;
-    background: var(--card); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    background: var(--card); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
     border-top: 1px solid var(--border); display: flex; justify-content: space-around;
     padding: 8px 8px calc(env(safe-area-inset-bottom, 0px) + 8px); z-index: 100;
   }
   .nav-btn {
     flex: 1; background: none; border: none; padding: 8px 4px; color: var(--hint);
-    font-family: inherit; font-size: 11px; font-weight: 500; cursor: pointer;
-    display: flex; flex-direction: column; align-items: center; gap: 3px;
-    border-radius: 10px; transition: all 0.2s;
+    font-family: inherit; font-size: 11px; font-weight: 600; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    border-radius: 12px; transition: all 0.2s;
   }
-  .nav-btn .nav-icon { font-size: 20px; line-height: 1; transition: transform 0.2s; }
+  .nav-btn .nav-icon { font-size: 21px; line-height: 1; transition: transform 0.2s; }
   .nav-btn.active { color: var(--accent); }
-  .nav-btn.active .nav-icon { transform: scale(1.1); }
+  .nav-btn.active .nav-icon { transform: scale(1.15) translateY(-1px); }
   .toast {
     position: fixed; bottom: calc(env(safe-area-inset-bottom, 0px) + 90px); left: 50%;
     transform: translateX(-50%) translateY(100px);
     background: var(--card-solid); color: var(--text); padding: 12px 20px;
-    border-radius: 12px; font-size: 14px; transition: transform 0.3s;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4); z-index: 1000;
-    border: 1px solid var(--border); max-width: 80vw; text-align: center;
+    border-radius: 13px; font-size: 14px; transition: transform 0.3s;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1000;
+    border: 1px solid var(--border); max-width: 80vw; text-align: center; font-weight: 500;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
-  .confetti { position: fixed; width: 8px; height: 8px; pointer-events: none; z-index: 999; animation: confetti-fall 1.2s linear forwards; }
+  .confetti { position: fixed; width: 8px; height: 8px; pointer-events: none; z-index: 999; animation: confetti-fall 1.3s linear forwards; }
   @keyframes confetti-fall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
-  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
   .modal.show { display: flex; }
   .modal-content { max-width: 100%; max-height: 90vh; display: flex; flex-direction: column; gap: 12px; align-items: center; }
   .modal-content img { max-width: 100%; max-height: 70vh; border-radius: 14px; }
   .modal-actions { display: flex; gap: 8px; width: 100%; max-width: 400px; }
   .close-modal {
     position: absolute; top: calc(env(safe-area-inset-top, 0px) + 16px); right: 16px;
-    width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.15);
-    border: none; color: #fff; font-size: 20px; cursor: pointer; backdrop-filter: blur(10px);
+    width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.15);
+    border: none; color: #fff; font-size: 20px; cursor: pointer; backdrop-filter: blur(12px);
   }
 </style>
 </head>
 <body>
 
 <div class="bg-blobs">
-  <div class="blob b1"></div>
-  <div class="blob b2"></div>
-  <div class="blob b3"></div>
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
 </div>
 
 <header class="app-header">
@@ -292,6 +315,12 @@
       <div class="emoji-row" id="emojiRowBottom"></div>
     </div>
 
+    <div class="section-title">
+      <span>Быстрые фразы</span>
+      <button class="link" id="rerollPhrases">🔄 Другие</button>
+    </div>
+    <div class="card" id="phrasesCard"></div>
+
     <div class="section-title">Настройки текста</div>
     <div class="card">
       <div class="setting-row">
@@ -309,6 +338,12 @@
           <button data-size="medium" class="active">Сред</button>
           <button data-size="large">Бол</button>
         </div>
+      </div>
+      <div class="setting-row" style="flex-direction:column; align-items:flex-start;">
+        <div class="setting-info" style="width:100%;">
+          <div class="setting-label">Цвет текста</div>
+        </div>
+        <div class="color-row" id="colorRow"></div>
       </div>
       <div class="setting-row">
         <div class="setting-info">
@@ -422,9 +457,9 @@
 
 <script>
 const tg = window.Telegram?.WebApp;
-if (tg) { tg.ready(); tg.expand(); }
+if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
 
-/* ============ ШАБЛОНЫ (imgflip) ============ */
+/* ============ ШАБЛОНЫ ============ */
 const TEMPLATES = [
   { id: 'drake',       name: 'Дрейк',         cat: 'classic',  url: 'https://i.imgflip.com/30b1gx.jpg' },
   { id: 'buttons',     name: 'Две кнопки',    cat: 'classic',  url: 'https://i.imgflip.com/1g8my4.jpg' },
@@ -449,7 +484,6 @@ const TEMPLATES = [
   { id: 'owl',         name: 'Сова',          cat: 'animals',  url: 'https://i.imgflip.com/2gnnjh.jpg' },
   { id: 'thisfine',    name: 'This is Fine',  cat: 'cartoon',  url: 'https://i.imgflip.com/wxica.jpg' },
   { id: 'oprah',       name: 'Опра',          cat: 'cartoon',  url: 'https://i.imgflip.com/1bh8.jpg' },
-  { id: 'spongebob',   name: 'Спанч 2',       cat: 'cartoon',  url: 'https://i.imgflip.com/1otk96.jpg' },
   { id: 'squidward',   name: 'Сквид',         cat: 'cartoon',  url: 'https://i.imgflip.com/2v5wr6.jpg' },
   { id: 'yodawg',      name: 'Йода',          cat: 'cartoon',  url: 'https://i.imgflip.com/1b42wl.jpg' },
   { id: 'tenguy',      name: 'Джентльмен',    cat: 'cartoon',  url: 'https://i.imgflip.com/1bgs0z.jpg' },
@@ -472,32 +506,65 @@ const CATEGORIES = [
 
 const QUICK_EMOJI = ['😂','🔥','💀','😎','🤡','👀','💯','🚀','😭','🤔','❤️','✨','👑','💪','🧠','🤯','😱','🤣','👍','🙏','💩','⚡','🎉','🤝'];
 
+const TEXT_COLORS = [
+  { id: 'white',  value: '#ffffff', label: 'Белый' },
+  { id: 'black',  value: '#000000', label: 'Чёрный' },
+  { id: 'yellow', value: '#fbbf24', label: 'Жёлтый' },
+  { id: 'red',    value: '#ef4444', label: 'Красный' },
+  { id: 'green',  value: '#10b981', label: 'Зелёный' },
+  { id: 'blue',   value: '#60a5fa', label: 'Синий' }
+];
+
+const PHRASES_POOL = [
+  { top: 'Когда понял, что', bottom: 'уже поздно' },
+  { top: 'Я в 3 часа ночи', bottom: 'вместо сна' },
+  { top: 'Мама сказала', bottom: 'я сделал наоборот' },
+  { top: 'Никто:', bottom: 'Я в 5 утра:' },
+  { top: 'Понедельник', bottom: 'Опять ты' },
+  { top: 'Я после 2 чашек кофе', bottom: 'Спокойствие' },
+  { top: 'Когда проверил баланс', bottom: 'Я в шоке' },
+  { top: 'Мой план', bottom: 'Реальность' },
+  { top: 'Хочу спать', bottom: 'Но телефон сам себя не полистает' },
+  { top: 'Ожидание', bottom: 'Реальность' },
+  { top: 'Когда сказали', bottom: '«Работать в выходные»' },
+  { top: 'Я и мой будильник', bottom: 'Враг на всю жизнь' },
+  { top: 'Мне 30', bottom: 'Понял, что ничего не понял' },
+  { top: 'Когда зашёл в холодильник', bottom: 'В третий раз за час' },
+  { top: 'Обещал себе', bottom: 'Начать с понедельника' },
+  { top: 'Скажу честно', bottom: 'Ничего не понял' },
+  { top: 'Когда друг зовёт гулять', bottom: 'А я уже в пижаме' },
+  { top: 'Утро', bottom: 'Зачем ты пришло' },
+  { top: 'Когда мама спрашивает', bottom: 'Как дела в школе' },
+  { top: 'Я и мои планы', bottom: 'Разные вселенные' }
+];
+
 /* ============ ХРАНИЛИЩЕ ============ */
 const store = {
   get settings() { try { return JSON.parse(localStorage.getItem('memeSettings') || '{}'); } catch { return {}; } },
-  set settings(v) { localStorage.setItem('memeSettings', JSON.stringify(v)); },
+  set settings(v) { try { localStorage.setItem('memeSettings', JSON.stringify(v)); } catch(e){} },
   get history() { try { return JSON.parse(localStorage.getItem('memeHistory') || '[]'); } catch { return []; } },
-  set history(v) { localStorage.setItem('memeHistory', JSON.stringify(v.slice(0, 40))); },
-  get count() { return parseInt(localStorage.getItem('memeCount') || '0', 10); },
-  set count(v) { localStorage.setItem('memeCount', v); }
+  set history(v) { try { localStorage.setItem('memeHistory', JSON.stringify(v.slice(0, 40))); } catch(e){} },
+  get count() { return parseInt(localStorage.getItem('memeCount') || '0', 10) || 0; },
+  set count(v) { try { localStorage.setItem('memeCount', v); } catch(e){} }
 };
 
 const settings = Object.assign({
   theme: 'auto', autosave: true, defaultTemplate: 'drake',
-  font: 'impact', size: 'medium', outline: true, gradient: true
+  font: 'impact', size: 'medium', outline: true, gradient: true, textColor: 'white'
 }, store.settings);
 
 let selectedTemplate = settings.defaultTemplate;
 let selectedCategory = 'all';
 let selectedSource = 'template';
 let userPhoto = null;
+let currentPhrases = [];
 
 /* ============ ТЕМА ============ */
 function applyTheme() {
   let t = settings.theme;
   if (t === 'auto') t = tg?.colorScheme === 'light' ? 'light' : 'dark';
   document.body.classList.toggle('light', t === 'light');
-  if (tg?.setHeaderColor) tg.setHeaderColor(t === 'light' ? '#f0f2f5' : '#0f1420');
+  try { if (tg?.setHeaderColor) tg.setHeaderColor(t === 'light' ? '#f8fafc' : '#0a0e18'); } catch(e){}
   document.querySelectorAll('#themeSegment button').forEach(b =>
     b.classList.toggle('active', b.dataset.theme === settings.theme));
 }
@@ -509,9 +576,8 @@ function updateCounters() {
   document.getElementById('historyCount').textContent = store.history.length + ' мемов';
 }
 
-/* ============ КАТЕГОРИИ / ШАБЛОНЫ ============ */
-function proxiedUrl(url, w = 300) {
-  // weserv — только для превью (мелких). Для генерации — через loadImageRobust
+/* ============ ШАБЛОНЫ ============ */
+function proxiedUrl(url, w) {
   return `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&w=${w}&output=jpg`;
 }
 
@@ -536,12 +602,12 @@ function renderTemplates() {
   const el = document.getElementById('templates');
   el.innerHTML = '';
   const list = selectedCategory === 'all' ? TEMPLATES : TEMPLATES.filter(t => t.cat === selectedCategory);
-  list.forEach(t => {
+  list.forEach((t, i) => {
     const btn = document.createElement('button');
     btn.className = 'template-btn' + (t.id === selectedTemplate ? ' active' : '');
     btn.innerHTML = `
       <div class="template-thumb">
-        <img src="${proxiedUrl(t.url, 150)}" alt="" loading="lazy" onerror="this.style.opacity='0.2'">
+        <img data-src="${proxiedUrl(t.url, 150)}" alt="" loading="lazy" style="opacity:0;transition:opacity .3s">
       </div>
       <span class="template-name">${t.name}</span>
     `;
@@ -553,6 +619,21 @@ function renderTemplates() {
       if (tg) tg.HapticFeedback?.selectionChanged();
     };
     el.appendChild(btn);
+  });
+  lazyLoadThumbs();
+}
+
+// Ленивая загрузка превью с задержкой — чтобы не блочить UI
+function lazyLoadThumbs() {
+  const imgs = document.querySelectorAll('#templates img[data-src]');
+  imgs.forEach((img, idx) => {
+    setTimeout(() => {
+      const src = img.dataset.src;
+      if (!src) return;
+      img.onload = () => { img.style.opacity = '1'; };
+      img.onerror = () => { img.style.opacity = '0'; img.parentElement.textContent = '🖼️'; };
+      img.src = src;
+    }, idx * 60); // по одной каждые 60мс
   });
 }
 
@@ -575,19 +656,66 @@ function renderEmojiRows() {
   });
 }
 
+function renderColors() {
+  const el = document.getElementById('colorRow');
+  el.innerHTML = '';
+  TEXT_COLORS.forEach(c => {
+    const b = document.createElement('div');
+    b.className = 'color-dot' + (c.id === settings.textColor ? ' active' : '');
+    b.style.background = c.value;
+    b.style.border = c.id === 'white' ? '2px solid rgba(255,255,255,0.3)' : '';
+    b.onclick = () => {
+      settings.textColor = c.id;
+      saveSettings();
+      renderColors();
+      if (tg) tg.HapticFeedback?.selectionChanged();
+    };
+    el.appendChild(b);
+  });
+}
+
+function renderPhrases() {
+  // Выбираем 3 случайные фразы
+  const shuffled = [...PHRASES_POOL].sort(() => Math.random() - 0.5);
+  currentPhrases = shuffled.slice(0, 3);
+  const el = document.getElementById('phrasesCard');
+  el.innerHTML = '';
+  currentPhrases.forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'phrase-btn';
+    b.textContent = `${p.top} → ${p.bottom}`;
+    b.onclick = () => {
+      document.getElementById('topText').value = p.top;
+      document.getElementById('bottomText').value = p.bottom;
+      updateClearButtons();
+      if (tg) tg.HapticFeedback?.impactOccurred('light');
+      showToast('Фраза подставлена');
+    };
+    el.appendChild(b);
+  });
+}
+
+function updateClearButtons() {
+  ['topText', 'bottomText'].forEach(id => {
+    const input = document.getElementById(id);
+    const btn = input.parentElement.querySelector('.clear-input');
+    btn.style.display = input.value ? 'flex' : 'none';
+  });
+}
+
 /* ============ УТИЛИТЫ ============ */
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2400);
 }
 function saveSettings() { store.settings = settings; }
 
 function confettiBurst() {
-  const colors = ['#5288c1','#6ab3f3','#a06af3','#4dc77d','#ffd93d'];
-  for (let i = 0; i < 24; i++) {
+  const colors = ['#3b82f6','#60a5fa','#a78bfa','#10b981','#fbbf24'];
+  for (let i = 0; i < 22; i++) {
     const c = document.createElement('div');
     c.className = 'confetti';
     c.style.background = colors[i % colors.length];
@@ -596,11 +724,11 @@ function confettiBurst() {
     c.style.transform = `translateX(${(Math.random() - 0.5) * 100}px)`;
     c.style.animationDelay = (Math.random() * 0.2) + 's';
     document.body.appendChild(c);
-    setTimeout(() => c.remove(), 1500);
+    setTimeout(() => c.remove(), 1600);
   }
 }
 
-/* ============ ТЕКСТ НА CANVAS ============ */
+/* ============ ТЕКСТ ============ */
 function getFont() {
   if (settings.font === 'arial') return 'Arial, sans-serif';
   if (settings.font === 'comic') return '"Comic Sans MS", cursive';
@@ -610,6 +738,14 @@ function getSize(base) {
   if (settings.size === 'small') return base * 0.7;
   if (settings.size === 'large') return base * 1.3;
   return base;
+}
+function getTextColor() {
+  const c = TEXT_COLORS.find(x => x.id === settings.textColor);
+  return c ? c.value : '#ffffff';
+}
+function getOutlineColor() {
+  // контрастная обводка
+  return settings.textColor === 'black' ? '#ffffff' : '#000000';
 }
 function drawText(ctx, text, x, y, maxWidth, fontSize, isTop) {
   if (!text.trim()) return;
@@ -631,12 +767,12 @@ function drawText(ctx, text, x, y, maxWidth, fontSize, isTop) {
   lines.forEach((l, i) => {
     const cy = startY + i * lineHeight;
     if (settings.outline) {
-      ctx.strokeStyle = '#000';
+      ctx.strokeStyle = getOutlineColor();
       ctx.lineWidth = Math.max(3, fontSize * 0.12);
       ctx.lineJoin = 'round';
       ctx.strokeText(l, x, cy);
     }
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = getTextColor();
     ctx.fillText(l, x, cy);
   });
 }
@@ -673,7 +809,7 @@ document.getElementById('removePhoto').onclick = (e) => {
   uploadZone.style.display = 'block';
 };
 
-/* ============ ПЕРЕКЛЮЧАТЕЛЬ ИСТОЧНИКА ============ */
+/* ============ ПЕРЕКЛЮЧАТЕЛЬ ============ */
 document.querySelectorAll('#sourceTabs .cat-btn').forEach(btn => {
   btn.onclick = () => {
     selectedSource = btn.dataset.source;
@@ -688,7 +824,6 @@ document.querySelectorAll('#sourceTabs .cat-btn').forEach(btn => {
 const generateBtn = document.getElementById('generateBtn');
 const memeContainer = document.getElementById('memeContainer');
 
-// Каскад прокси: пробуем по очереди, пока один не сработает
 async function loadImageRobust(originalUrl) {
   const stripped = originalUrl.replace(/^https?:\/\//, '');
   const attempts = [
@@ -703,15 +838,15 @@ async function loadImageRobust(originalUrl) {
       const img = new Image();
       img.crossOrigin = 'anonymous';
       await new Promise((res, rej) => {
-        const t = setTimeout(() => rej(new Error('timeout')), 8000);
+        const t = setTimeout(() => rej(new Error('timeout')), 6000);
         img.onload = () => { clearTimeout(t); res(); };
         img.onerror = () => { clearTimeout(t); rej(new Error('load fail')); };
         img.src = url;
       });
       if (img.width > 0) return img;
-    } catch (e) { /* пробуем следующий */ }
+    } catch (e) { /* next */ }
   }
-  throw new Error('Не удалось загрузить картинку');
+  throw new Error('Не удалось загрузить');
 }
 
 async function generateMeme() {
@@ -746,13 +881,11 @@ async function generateMeme() {
       const g1 = ctx.createLinearGradient(0, 0, 0, h * 0.35);
       g1.addColorStop(0, 'rgba(0,0,0,0.55)');
       g1.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = g1;
-      ctx.fillRect(0, 0, w, h * 0.35);
+      ctx.fillStyle = g1; ctx.fillRect(0, 0, w, h * 0.35);
       const g2 = ctx.createLinearGradient(0, h, 0, h * 0.65);
       g2.addColorStop(0, 'rgba(0,0,0,0.55)');
       g2.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = g2;
-      ctx.fillRect(0, h * 0.65, w, h * 0.35);
+      ctx.fillStyle = g2; ctx.fillRect(0, h * 0.65, w, h * 0.35);
     }
 
     const fontSize = getSize(w * 0.09);
@@ -791,7 +924,7 @@ async function generateMeme() {
 
   } catch (e) {
     console.error(e);
-    memeContainer.innerHTML = `<div class="empty"><span class="empty-icon">😢</span>Не получилось: ${e.message}<br><br>Попробуй другой шаблон или переключись на «Своё фото».</div>`;
+    memeContainer.innerHTML = `<div class="empty"><span class="empty-icon">😢</span>Не получилось загрузить шаблон.<br><br>Попробуй другой или переключись на «📸 Своё фото» — работает без интернета.</div>`;
     generateBtn.disabled = false;
   }
 }
@@ -805,8 +938,8 @@ function shareMeme(url) {
   if (tg) tg.HapticFeedback?.impactOccurred('light');
   const text = 'Смотри, какой мем я сделал! 😂';
   const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
-  if (tg) tg.openTelegramLink(shareUrl);
-  else window.open(shareUrl, '_blank');
+  try { if (tg) tg.openTelegramLink(shareUrl); else window.open(shareUrl, '_blank'); }
+  catch(e) { window.open(shareUrl, '_blank'); }
 }
 async function downloadMeme(url) {
   if (tg) tg.HapticFeedback?.impactOccurred('light');
@@ -904,6 +1037,10 @@ document.getElementById('randomBtn').onclick = () => {
   if (tg) tg.HapticFeedback?.impactOccurred('medium');
   showToast(`Шаблон: ${t.name}`);
 };
+document.getElementById('rerollPhrases').onclick = () => {
+  renderPhrases();
+  if (tg) tg.HapticFeedback?.impactOccurred('light');
+};
 
 /* ============ ОЧИСТКА ИНПУТОВ ============ */
 document.querySelectorAll('.clear-input').forEach(b => {
@@ -914,20 +1051,23 @@ document.querySelectorAll('.clear-input').forEach(b => {
 });
 ['topText', 'bottomText'].forEach(id => {
   const input = document.getElementById(id);
-  const clearBtn = input.parentElement.querySelector('.clear-input');
-  input.addEventListener('input', () => { clearBtn.style.display = input.value ? 'flex' : 'none'; });
-  clearBtn.style.display = 'none';
+  input.addEventListener('input', updateClearButtons);
 });
+updateClearButtons();
 
 /* ============ СТАРТ ============ */
 applyTheme();
 renderCategories();
 renderTemplates();
 renderEmojiRows();
+renderColors();
+renderPhrases();
 updateCounters();
 renderHistory();
 
-if (tg) tg.onEvent?.('themeChanged', () => { if (settings.theme === 'auto') applyTheme(); });
+if (tg) {
+  try { tg.onEvent?.('themeChanged', () => { if (settings.theme === 'auto') applyTheme(); }); } catch(e){}
+}
 </script>
 </body>
 </html>
