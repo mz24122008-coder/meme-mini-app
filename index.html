@@ -42,7 +42,6 @@
     transition: background 0.3s, color 0.3s;
   }
 
-  /* Анимированный фон */
   .bg-blobs {
     position: fixed;
     inset: 0;
@@ -67,7 +66,6 @@
   }
   body.light .blob { opacity: 0.25; }
 
-  /* Шапка */
   .app-header {
     padding: calc(env(safe-area-inset-top, 0px) + 18px) 20px 12px;
     text-align: center;
@@ -89,7 +87,6 @@
     text-transform: uppercase;
   }
 
-  /* Основной контейнер */
   .main {
     padding: 0 16px 100px;
     max-width: 560px;
@@ -102,7 +99,6 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* Карточки */
   .card {
     background: var(--card);
     backdrop-filter: blur(12px);
@@ -136,7 +132,6 @@
     font-weight: 600;
   }
 
-  /* Категории */
   .categories {
     display: flex;
     gap: 8px;
@@ -168,7 +163,6 @@
   }
   .cat-btn:active { transform: scale(0.95); }
 
-  /* Сетка шаблонов */
   .templates {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
@@ -199,7 +193,6 @@
   }
   .template-emoji { font-size: 24px; line-height: 1; }
 
-  /* Инпуты */
   .input-group { margin-bottom: 10px; position: relative; }
   input[type="text"] {
     width: 100%;
@@ -236,7 +229,6 @@
     justify-content: center;
   }
 
-  /* Быстрые эмодзи */
   .emoji-row {
     display: flex;
     gap: 6px;
@@ -262,7 +254,6 @@
   }
   .emoji-btn:active { transform: scale(0.85); }
 
-  /* Главная кнопка */
   .generate-btn {
     width: 100%;
     padding: 16px;
@@ -292,7 +283,6 @@
   .generate-btn:active::before { transform: translateX(100%); }
   .generate-btn:disabled { opacity: 0.6; }
 
-  /* Результат */
   .meme-container {
     margin-top: 16px;
     display: flex;
@@ -339,7 +329,6 @@
   }
   .action-btn:active { transform: scale(0.95); }
 
-  /* Загрузчик */
   .loader-wrap { padding: 40px 0; text-align: center; }
   .loader {
     display: inline-block;
@@ -360,7 +349,6 @@
   }
   .empty-icon { font-size: 56px; display: block; margin-bottom: 14px; opacity: 0.5; }
 
-  /* История */
   .history-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -384,7 +372,6 @@
     display: block;
   }
 
-  /* Настройки */
   .setting-row {
     display: flex;
     justify-content: space-between;
@@ -472,7 +459,6 @@
     margin-top: 8px;
   }
 
-  /* Нижняя навигация */
   .bottom-nav {
     position: fixed;
     bottom: 0;
@@ -508,7 +494,6 @@
   .nav-btn.active { color: var(--accent); }
   .nav-btn.active .nav-icon { transform: scale(1.1); }
 
-  /* Тост */
   .toast {
     position: fixed;
     bottom: calc(env(safe-area-inset-bottom, 0px) + 90px);
@@ -520,7 +505,7 @@
     border-radius: 12px;
     font-size: 14px;
     transition: transform 0.3s;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    box-shadow',: 0 name 8px: 24px rgba(0,0,0 'Й,0.4);
     z-index: 1000;
     border: 1px solid var(--border);
     max-width: 80vw;
@@ -528,7 +513,6 @@
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
-  /* Конфетти */
   .confetti {
     position: fixed;
     width: 8px;
@@ -541,7 +525,6 @@
     to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
   }
 
-  /* Модалка просмотра истории */
   .modal {
     position: fixed;
     inset: 0;
@@ -630,14 +613,48 @@
       <div class="emoji-row" id="emojiRowBottom"></div>
     </div>
 
+    <div class="section-title">Настройки текста</div>
+    <div class="card">
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">Шрифт</div>
+        </div>
+        <div class="segment" id="fontSegment">
+          <button data-font="impact" class="active">Impact</button>
+          <button data-font="arial">Arial</button>
+          <button data-font="comic">Comic</button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">Размер текста</div>
+        </div>
+        <div class="segment" id="sizeSegment">
+          <button data-size="small">Мал</button>
+          <button data-size="medium" class="active">Сред</button>
+          <button data-size="large">Бол</button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">Обводка (контраст)</div>
+          <div class="setting-desc">Помогает видеть текст на любом фоне</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="outlineToggle" checked>
+          <span class="switch-slider"></span>
+        </label>
+      </div>
+    </div>
+
     <button class="generate-btn" id="generateBtn">🎨 Сгенерировать мем</button>
 
     <div class="meme-container" id="memeContainer">
       <div class="empty">
         <span class="empty-icon">🖼️</span>
-        Здесь0 появится твой мем
+        Здесь появится твой мем
       </div>
-    </ мdiv>
+    </div>
   </section>
 
   <!-- =============== ИСТОРИЯ =============== -->
@@ -670,16 +687,6 @@
     <div class="card">
       <div class="setting-row">
         <div class="setting-info">
-          <div class="setting-label">Водяной знак</div>
-          <div class="setting-desc">Логотип бота на картинке</div>
-        </div>
-        <label class="switch">
-          <input type="checkbox" id="watermarkToggle">
-          <span class="switch-slider"></span>
-        </label>
-      </div>
-      <div class="setting-row">
-        <div class="setting-info">
           <div class="setting-label">Авто-сохранение</div>
           <div class="setting-desc">Сохранять мемы в историю</div>
         </div>
@@ -695,7 +702,7 @@
       <div class="setting-row">
         <div class="setting-info">
           <div class="setting-label">Всего сгенерировано</div>
-          <div class="setting-desc" id="totalCount">емов</div>
+          <div class="setting-desc" id="totalCount">0 мемов</div>
         </div>
       </div>
       <div class="setting-row">
@@ -712,13 +719,7 @@
       <div class="setting-row">
         <div class="setting-info">
           <div class="setting-label">Версия</div>
-          <div class="setting-desc">1.0.0</div>
-        </div>
-      </div>
-      <div class="setting-row">
-        <div class="setting-info">
-          <div class="setting-label">Движок</div>
-          <div class="setting-desc">memegen.link API</div>
+          <div class="setting-desc">1.1.0</div>
         </div>
       </div>
     </div>
@@ -726,7 +727,6 @@
 
 </main>
 
-<!-- Нижняя навигация -->
 <nav class="bottom-nav">
   <button class="nav-btn active" data-tab="generator">
     <span class="nav-icon">🎨</span>
@@ -744,7 +744,6 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- Модалка для истории -->
 <div class="modal" id="modal">
   <button class="close-modal" id="closeModal">✕</button>
   <div class="modal-content">
@@ -758,13 +757,13 @@
 
 <script>
 /* ========================================================
-   ИНИЦИАЛИЗАЦИЯ TELEGRAM
+   ИНИЦИАЛИЗАЦИЯ
    ======================================================== */
 const tg = window.Telegram?.WebApp;
 if (tg) { tg.ready(); tg.expand(); if (tg.setHeaderColor) tg.setHeaderColor('#0f1420'); }
 
 /* ========================================================
-   ШАБЛОНЫ (разбитые по категориям)
+   ШАБЛОНЫ — теперь их 60+ (проверенные ID memegen.link)
    ======================================================== */
 const TEMPLATES = [
   // Классика
@@ -776,6 +775,10 @@ const TEMPLATES = [
   { id: 'facepalm', name: 'Фейспалм', emoji: '🤦', cat: 'classic' },
   { id: 'yuno', name: 'Y U NO', emoji: '😤', cat: 'classic' },
   { id: 'philosoraptor', name: 'Философ', emoji: '🦖', cat: 'classic' },
+  { id: 'fine', name: 'This is Fine', emoji: '🔥', cat: 'classic' },
+  { id: 'wonka', name: 'Вонка', emoji: '🍫', cat: 'classic' },
+  { id: 'mordor', name: 'Мордор', emoji: '💍', cat: 'classic' },
+  { id: 'yodawgода', emoji: '🐕', cat: 'classic' },
 
   // Реакции
   { id: 'panik', name: 'Паника', emoji: '😱', cat: 'react' },
@@ -786,18 +789,48 @@ const TEMPLATES = [
   { id: 'rollsafe', name: 'Smart', emoji: '🧠', cat: 'react' },
   { id: 'think', name: 'Думает', emoji: '🤨', cat: 'react' },
   { id: 'disastergirl', name: 'Пожар', emoji: '🔥', cat: 'react' },
+  { id: 'kermit', name: 'Кермит', emoji: '🐸', cat: 'react' },
+  { id: 'pigeon', name: 'Голубь', emoji: '🐦', cat: 'react' },
+  { id: 'apcr', name: 'Обезьяна', emoji: '🐵', cat: 'react' },
+  { id: 'both', name: 'Оба', emoji: '🤷', cat: 'react' },
 
   // Животные
   { id: 'doge', name: 'Doge', emoji: '🐕', cat: 'animals' },
   { id: 'sadfrog', name: 'Грустно', emoji: '🐸', cat: 'animals' },
   { id: 'woman-cat', name: 'Кошка', emoji: '🐱', cat: 'animals' },
   { id: 'ancient', name: 'Древний', emoji: '👽', cat: 'animals' },
+  { id: 'cate', name: 'Кот-босс', emoji: '😼', cat: 'animals' },
+  { id: 'fwp', name: 'Пингвин', emoji: '🐧', cat: 'animals' },
+  { id: 'll', name: 'Лев', emoji: '🦁', cat: 'animals' },
+  { id: 'bad', name: 'Собака', emoji: '🐶', cat: 'animals' },
 
   // Мульты
   { id: 'spongebob', name: 'Спанч', emoji: '🧽', cat: 'cartoon' },
   { id: 'squidward', name: 'Сквид', emoji: '🐙', cat: 'cartoon' },
   { id: 'oprah', name: 'Опра', emoji: '🎁', cat: 'cartoon' },
-  { id: 'money', name: 'Деньги', emoji: '💰', cat: 'cartoon' }
+  { id: 'money', name: 'Деньги', emoji: '💰', cat: 'cartoon' },
+  { id: 'simply', name: 'Боромир', emoji: '🧙', cat: 'cartoon' },
+  { id: 'ds', name: 'Тёмный', emoji: '🌑', cat: 'cartoon' },
+  { id: 'rollsafe', name: 'Ролл', emoji: '🤯', cat: 'cartoon' },
+  { id: 'tenguy', name: 'Джентльмен', emoji: '🎩', cat: 'cartoon' },
+
+  // Новые / Мемы 2.0
+  { id: 'afraid', name: 'Боится', emoji: '😨', cat: 'new' },
+  { id: 'clown', name: 'Клоун', emoji: '🤡', cat: 'new' },
+  { id: 'corona', name: 'Корона', emoji: '🦠', cat: 'new' },
+  { id: 'db', name: 'Отвлечённый', emoji: '👨‍👩‍👧', cat: 'new' },
+  { id: 'exit', name: 'Выход', emoji: '🚗', cat: 'new' },
+  { id: 'harold', name: 'Гарольд', emoji: '😊', cat: 'new' },
+  { id: 'interesting', name: 'Интересно', emoji: '🤔', cat: 'new' },
+  { id: 'left', name: 'Ушёл', emoji: '🚪', cat: 'new' },
+  { id: 'patrick', name: 'Патрик', emoji: '⭐', cat: 'new' },
+  { id: 'roll', name: 'Рулон', emoji: '🧻', cat: 'new' },
+  { id: 'scc', name: 'Спанч 2', emoji: '🧽', cat: 'new' },
+  { id: 'spiderman', name: 'Человек-паук', emoji: '🕷️', cat: 'new' },
+  { id: 'tuxedo', name: 'Тукс', emoji: '🤵', cat: 'new' },
+  { id: 'vw', name: 'Фольксваген', emoji: '🚗', cat: 'new' },
+  { id: 'blb', name: 'Белка', emoji: '🐿️', cat: 'new' },
+  { id: 'bih', name: 'Бизнес', emoji: '💼', cat: 'new' }
 ];
 
 const CATEGORIES = [
@@ -805,13 +838,14 @@ const CATEGORIES = [
   { id: 'classic', name: 'Классика', emoji: '🎬' },
   { id: 'react', name: 'Реакции', emoji: '😱' },
   { id: 'animals', name: 'Животные', emoji: '🐾' },
-  { id: 'cartoon', name: 'Мульты', emoji: '🎭' }
+  { id: 'cartoon', name: 'Мульты', emoji: '🎭' },
+  { id: 'new', name: 'Новинки', emoji: '🆕' }
 ];
 
-const QUICK_EMOJI = ['😂', '🔥', '💀', '😎', '🤡', '👀', '💯', '🚀', '😭', '🤔', '❤️', '✨', '👑', '💪', '🧠', '🤯'];
+const QUICK_EMOJI = ['😂', '🔥', '💀', '😎', '🤡', '👀', '💯', '🚀', '😭', '🤔', '❤️', '✨', '👑', '💪', '🧠', '🤯', '😱', '🤣', '👍', '🙏', '💩', '⚡', '🎉', '🤝'];
 
 /* ========================================================
-   СОСТОЯНИЕ И ХРАНИЛИЩЕ
+   ХРАНИЛИЩЕ
    ======================================================== */
 const store = {
   get settings() {
@@ -830,9 +864,11 @@ const store = {
 
 const settings = Object.assign({
   theme: 'auto',
-  watermark: false,
   autosave: true,
-  defaultTemplate: 'drake'
+  defaultTemplate: 'drake',
+  font: 'impact',
+  size: 'medium',
+  outline: true
 }, store.settings);
 
 let selectedTemplate = settings.defaultTemplate;
@@ -868,7 +904,7 @@ function updateCounters() {
 }
 
 /* ========================================================
-   КАТЕГОРИИ И ШАБЛОНЫ
+   КАТЕГОРИИ / ШАБЛОНЫ / ЭМОДЗИ
    ======================================================== */
 function renderCategories() {
   const el = document.getElementById('categories');
@@ -909,9 +945,6 @@ function renderTemplates() {
   });
 }
 
-/* ========================================================
-   БЫСТРЫЕ ЭМОДЗИ
-   ======================================================== */
 function renderEmojiRows() {
   ['emojiRowTop', 'emojiRowBottom'].forEach((id, idx) => {
     const el = document.getElementById(id);
@@ -942,14 +975,6 @@ function showToast(msg) {
   t._timer = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-function encodeText(text) {
-  if (!text || !text.trim()) return '_';
-  return encodeURIComponent(text.trim())
-    .replace(/-/g, '--')
-    .replace(/_/g, '__')
-    .replace(/%20/g, '_');
-}
-
 function saveSettings() { store.settings = settings; }
 
 function confettiBurst() {
@@ -968,45 +993,116 @@ function confettiBurst() {
 }
 
 /* ========================================================
-   ГЕНЕРАЦИЯ МЕМА
+   ГЕНЕРАЦИЯ — Canvas вместо API
    ======================================================== */
 const generateBtn = document.getElementById('generateBtn');
 const memeContainer = document.getElementById('memeContainer');
 
-function buildMemeUrl() {
-  const top = document.getElementById('topText').value;
-  const bottom = document.getElementById('bottomText').value;
-  const topEnc = encodeText(top);
-  const bottomEnc = encodeText(bottom);
-  return `https://api.memegen.link/images/${selectedTemplate}/${topEnc}/${bottomEnc}.png?width=800`;
+function getFont() {
+  if (settings.font === 'arial') return 'Arial, sans-serif';
+  if (settings.font === 'comic') return '"Comic Sans MS", cursive';
+  return 'Impact, "Arial Narrow", sans-serif';
 }
 
-generateBtn.onclick = () => {
-  if (tg) tg.HapticFeedback?.impactOccurred('medium');
+function getSize(base) {
+  if (settings.size === 'small') return base * 0.7;
+  if (settings.size === 'large') return base * 1.3;
+  return base;
+}
 
-  const url = buildMemeUrl();
+function drawText(ctx, text, x, y, maxWidth, fontSize, isTop) {
+  if (!text.trim()) return;
+  ctx.font = `bold ${fontSize}px ${getFont()}`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = isTop ? 'top' : 'bottom';
+
+  // Перенос строк
+  const words = text.split(' ');
+  const lines = [];
+  let line = '';
+  words.forEach(w => {
+    const test = line ? line + ' ' + w : w;
+    if (ctx.measureText(test).width > maxWidth && line) {
+      lines.push(line);
+      line = w;
+    } else {
+      line = test;
+    }
+  });
+  if (line) lines.push(line);
+
+  const lineHeight = fontSize * 1.1;
+  const startY = isTop ? y : y - (lines.length - 1) * lineHeight;
+
+  lines.forEach((l, i) => {
+    const cy = startY + i * lineHeight;
+    // Обводка
+    if (settings.outline) {
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = Math.max(3, fontSize * 0.12);
+      ctx.lineJoin = 'round';
+      ctx.strokeText(l, x, cy);
+    }
+    // Основной текст — белый всегда
+    ctx.fillStyle = '#fff';
+    ctx.fillText(l, x, cy);
+  });
+}
+
+async function generateMeme() {
+  const top = document.getElementById('topText').value;
+  const bottom = document.getElementById('bottomText').value;
+
+  if (!top.trim() && !bottom.trim()) {
+    showToast('Введи хотя бы один текст');
+    return;
+  }
+
   generateBtn.disabled = true;
   memeContainer.innerHTML = '<div class="loader-wrap"><div class="loader"></div></div>';
 
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
+  try {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
 
-  img.onload = () => {
-    currentMemeUrl = url;
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = () => reject(new Error('Не удалось загрузить шаблон'));
+      img.src = `https://api.memegen.link/images/${selectedTemplate}/_/_.png?width=800`;
+    });
+
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+
+    const fontSize = getSize(canvas.width * 0.09);
+    const padding = canvas.width * 0.05;
+
+    // Верхний текст
+    if (top.trim()) {
+      drawText(ctx, top, canvas.width / 2, padding, canvas.width - padding * 2, fontSize, true);
+    }
+    // Нижний текст
+    if (bottom.trim()) {
+      drawText(ctx, bottom, canvas.width / 2, canvas.height - padding, canvas.width - padding * 2, fontSize, false);
+    }
+
+    const dataUrl = canvas.toDataURL('image/png');
+    currentMemeUrl = dataUrl;
     currentMemeData = {
-      url,
+      url: dataUrl,
       template: selectedTemplate,
-      top: document.getElementById('topText').value,
-      bottom: document.getElementById('bottomText').value,
+      top, bottom,
       time: Date.now()
     };
 
+    // Показываем результат
     memeContainer.innerHTML = '';
-
     const imgEl = document.createElement('img');
-    imgEl.src = url;
+    imgEl.src = dataUrl;
     imgEl.className = 'meme-img';
-    imgEl.crossOrigin = 'anonymous';
     memeContainer.appendChild(imgEl);
 
     const actions = document.createElement('div');
@@ -1017,8 +1113,8 @@ generateBtn.onclick = () => {
     `;
     memeContainer.appendChild(actions);
 
-    document.getElementById('shareBtn').onclick = () => shareMeme(url);
-    document.getElementById('downloadBtn').onclick = () => downloadMeme(url);
+    document.getElementById('shareBtn').onclick = () => shareMeme(dataUrl);
+    document.getElementById('downloadBtn').onclick = () => downloadMeme(dataUrl);
 
     // Счётчик
     store.count = store.count + 1;
@@ -1035,15 +1131,17 @@ generateBtn.onclick = () => {
     generateBtn.disabled = false;
     if (tg) tg.HapticFeedback?.notificationOccurred('success');
     confettiBurst();
-  };
 
-  img.onerror = () => {
-    memeContainer.innerHTML = '<div class="empty"><span class="empty-icon">😢</span>Не удалось сгенерировать. Попробуй другой текст или шаблон.</div>';
+  } catch (e) {
+    memeContainer.innerHTML = '<div class="empty"><span class="empty-icon">😢</span>Не удалось сгенерировать. Попробуй другой шаблон или текст.</div>';
     generateBtn.disabled = false;
-    showToast('Ошибка генерации');
-  };
+    showToast('Ошибка: ' + e.message);
+  }
+}
 
-  img.src = url;
+generateBtn.onclick = () => {
+  if (tg) tg.HapticFeedback?.impactOccurred('medium');
+  generateMeme();
 };
 
 /* ========================================================
@@ -1061,26 +1159,21 @@ async function downloadMeme(url) {
   if (tg) tg.HapticFeedback?.impactOccurred('light');
   showToast('Скачиваю...');
   try {
-    const resp = await fetch(url);
-    const blob = await resp.blob();
-    const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = blobUrl;
+    a.href = url;
     a.download = `meme_${Date.now()}.png`;
     document.body.appendChild(a);
     a.click();
     a.remove();
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
     showToast('Сохранено!');
   } catch (e) {
-    // Fallback: открыть в новой вкладке
     window.open(url, '_blank');
     showToast('Открой картинку и сохрани вручную');
   }
 }
 
 /* ========================================================
-   НАВИГАЦИЯ ПО ТАБАМ
+   НАВИГАЦИЯ
    ======================================================== */
 document.querySelectorAll('.nav-btn').forEach(btn => {
   btn.onclick = () => {
@@ -1107,7 +1200,7 @@ function renderHistory() {
   el.innerHTML = '';
   const grid = document.createElement('div');
   grid.className = 'history-grid';
-  h.forEach((item, i) => {
+  h.forEach((item) => {
     const d = document.createElement('div');
     d.className = 'history-item';
     d.innerHTML = `<img src="${item.url}" alt="" loading="lazy">`;
@@ -1143,7 +1236,7 @@ document.getElementById('modalShare').onclick = () => shareMeme(modalImg.src);
 document.getElementById('modalDownload').onclick = () => downloadMeme(modalImg.src);
 
 /* ========================================================
-   НАСТРОЙКИ — ОБРАБОТЧИКИ
+   НАСТРОЙКИ — ТЕМА
    ======================================================== */
 document.querySelectorAll('#themeSegment button').forEach(b => {
   b.onclick = () => {
@@ -1154,11 +1247,37 @@ document.querySelectorAll('#themeSegment button').forEach(b => {
   };
 });
 
-document.getElementById('watermarkToggle').checked = settings.watermark;
-document.getElementById('watermarkToggle').onchange = (e) => {
-  settings.watermark = e.target.checked;
+/* ========================================================
+   НАСТРОЙКИ — ШРИФТ
+   ======================================================== */
+document.querySelectorAll('#fontSegment button').forEach(b => {
+  b.onclick = () => {
+    settings.font = b.dataset.font;
+    saveSettings();
+    document.querySelectorAll('#fontSegment button').forEach(x => x.classList.toggle('active', x === b));
+    if (tg) tg.HapticFeedback?.selectionChanged();
+  };
+});
+
+/* ========================================================
+   НАСТРОЙКИ — РАЗМЕР
+   ======================================================== */
+document.querySelectorAll('#sizeSegment button').forEach(b => {
+  b.onclick = () => {
+    settings.size = b.dataset.size;
+    saveSettings();
+    document.querySelectorAll('#sizeSegment button').forEach(x => x.classList.toggle('active', x === b));
+    if (tg) tg.HapticFeedback?.selectionChanged();
+  };
+});
+
+/* ========================================================
+   НАСТРОЙКИ — ОБВОДКА / АВТОСОХРАНЕНИЕ
+   ======================================================== */
+document.getElementById('outlineToggle').checked = settings.outline;
+document.getElementById('outlineToggle').onchange = (e) => {
+  settings.outline = e.target.checked;
   saveSettings();
-  showToast(e.target.checked ? 'Водяной знак включён' : 'Водяной знак выключен');
 };
 
 document.getElementById('autosaveToggle').checked = settings.autosave;
@@ -1219,7 +1338,14 @@ renderEmojiRows();
 updateCounters();
 renderHistory();
 
-// Реакция на смену темы Telegram
+// Восстанавливаем активные кнопки настроек
+document.querySelectorAll('#fontSegment button').forEach(b => {
+  b.classList.toggle('active', b.dataset.font === settings.font);
+});
+document.querySelectorAll('#sizeSegment button').forEach(b => {
+  b.classList.toggle('active', b.dataset.size === settings.size);
+});
+
 if (tg) {
   tg.onEvent?.('themeChanged', () => {
     if (settings.theme === 'auto') applyTheme();
